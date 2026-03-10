@@ -1,7 +1,7 @@
 import unittest
 from dataclasses import dataclass
-from typing import TypedDict
 from unittest.mock import patch
+from typing_extensions import TypedDict
 
 
 class TestOutputTextJsonSchema(unittest.TestCase):

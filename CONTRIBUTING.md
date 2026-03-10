@@ -6,7 +6,7 @@ Thank you for your interest in contributing to nous-genai!
 
 ### Prerequisites
 
-- Python >= 3.12
+- Python >= 3.10
 - [uv](https://github.com/astral-sh/uv) (recommended) or pip
 
 ### Getting Started

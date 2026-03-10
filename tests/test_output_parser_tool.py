@@ -1,6 +1,6 @@
 import unittest
 from dataclasses import dataclass
-from typing import TypedDict
+from typing_extensions import TypedDict
 
 
 class TestOutputParserTool(unittest.TestCase):

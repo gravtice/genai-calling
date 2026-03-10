@@ -21,18 +21,22 @@ jobs:
           version: "latest"
 
       - name: Set up Python
-        run: uv python install 3.12
+        run: uv python install 3.10
 
       - name: Check tag matches version
         run: |
-          python_bin="$(uv python find 3.12)"
+          python_bin="$(uv python find 3.10)"
           "$python_bin" - <<'PY'
           import os
-          import tomllib
+          import re
+          from pathlib import Path
 
           tag = os.environ["GITHUB_REF_NAME"]
-          with open("pyproject.toml", "rb") as f:
-            version = tomllib.load(f)["project"]["version"]
+          text = Path("pyproject.toml").read_text(encoding="utf-8")
+          m = re.search(r'^version\s*=\s*"([^"]+)"\s*$', text, re.MULTILINE)
+          if m is None:
+            raise SystemExit("failed to read project.version from pyproject.toml")
+          version = m.group(1)
           expected = f"v{version}"
           if tag != expected:
             raise SystemExit(f"tag {tag!r} != {expected!r}")

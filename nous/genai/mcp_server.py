@@ -11,7 +11,8 @@ from hmac import compare_digest
 from collections import OrderedDict
 from contextvars import ContextVar
 from dataclasses import asdict, dataclass, replace
-from typing import Any, TypedDict, cast
+from typing import Any, cast
+from typing_extensions import TypedDict
 from urllib.parse import parse_qs
 from uuid import uuid4
 

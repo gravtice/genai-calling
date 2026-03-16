@@ -52,7 +52,7 @@ https://github.com/gravtice/nous-skills/tree/main/skills/nous-genai
 环境变量有两种设置方式：
 
 1. 运行时直接指定（命令前内联或在 shell 中 `export`）
-2. 写入环境配置文件（`.env.local`、`.env.production`、`.env.development`、`.env.test`）
+2. 写入环境配置文件（`.env.local`、`.env.production`、`.env.development`、`.env.test`）以及全局兜底文件 `~/.nous/.env`
 
 运行时内联示例：
 
@@ -62,9 +62,11 @@ NOUS_GENAI_OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "
 
 使用配置文件时，SDK/CLI/MCP 启动会自动加载，优先级（高 -> 低）：
 
-`.env.local > .env.production > .env.development > .env.test`
+`.env.local > .env.production > .env.development > .env.test > ~/.nous/.env`
 
-覆盖规则：进程环境变量优先于 `.env.*`（因为加载使用 `os.environ.setdefault()`）。
+覆盖规则：进程环境变量优先于项目和全局 env 文件（因为加载使用 `os.environ.setdefault()`）。
+
+`~/.nous/.env` 适合放用户级共享默认值（例如 API Key）；端口这类 worktree 专属配置仍然建议放在项目内的 `.env.local`。
 
 最小 `.env.local` 示例（只用 OpenAI）：
 

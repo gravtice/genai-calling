@@ -288,6 +288,7 @@ SDK 必须支持以下输入形式：
 2. `.env.production`
 3. `.env.development`
 4. `.env.test`
+5. `~/.nous/.env`
 
 ### 8.2 推荐环境变量命名（示例）
 
@@ -309,6 +310,7 @@ Provider：
 约束：
 
 - `.env.local` 必须被 gitignore（不提交）。
+- `~/.nous/.env` 只承载用户级共享默认值，不承载 worktree 专属配置。
 - SDK 默认行为必须“零参数可跑”，但前提是必要密钥已配置。
 
 ## 9. Provider 接入策略（按类型分组）

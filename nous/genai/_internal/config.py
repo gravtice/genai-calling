@@ -32,17 +32,22 @@ def _parse_env_line(line: str) -> tuple[str, str] | None:
     return key, value
 
 
+def _global_env_path() -> Path:
+    return Path.home() / ".nous" / ".env"
+
+
 def load_env_files(root: str | Path | None = None) -> list[Path]:
     """
     Load env files by priority:
-    `.env.local > .env.production > .env.development > .env.test`.
+    `.env.local > .env.production > .env.development > .env.test > ~/.nous/.env`.
 
     Implementation: apply higher priority first without overriding existing env.
     """
     base = Path(root) if root is not None else Path.cwd()
     loaded: list[Path] = []
-    for name in _ENV_PRIORITY:
-        path = base / name
+    paths = [base / name for name in _ENV_PRIORITY]
+    paths.append(_global_env_path())
+    for path in paths:
         if not path.is_file():
             continue
         loaded.append(path)

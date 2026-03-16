@@ -53,7 +53,7 @@ Configuration is managed via environment variables.
 You can set env vars in two ways:
 
 1. Runtime env vars (inline or exported in shell)
-2. Env files (`.env.local`, `.env.production`, `.env.development`, `.env.test`)
+2. Env files (`.env.local`, `.env.production`, `.env.development`, `.env.test`) and the global fallback `~/.nous/.env`
 
 Runtime example (inline):
 
@@ -63,9 +63,11 @@ NOUS_GENAI_OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "
 
 When env files are used, SDK/CLI/MCP loads them automatically with priority (high -> low):
 
-`.env.local > .env.production > .env.development > .env.test`
+`.env.local > .env.production > .env.development > .env.test > ~/.nous/.env`
 
-Process env vars override `.env.*` (the loader uses `os.environ.setdefault()`).
+Process env vars override both project and global env files (the loader uses `os.environ.setdefault()`).
+
+Use `~/.nous/.env` for user-wide shared defaults such as API keys. Keep worktree-specific settings such as ports in project-local `.env.local`.
 
 Minimal `.env.local` (OpenAI only):
 

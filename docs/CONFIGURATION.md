@@ -16,10 +16,13 @@
 2. `.env.production`
 3. `.env.development`
 4. `.env.test`
+5. `~/.nous/.env`
 
 覆盖规则：`load_env_files()` 用的是 `os.environ.setdefault()`，因此不会覆盖进程已存在的环境变量：
 
-`进程环境变量 > .env.local > .env.production > .env.development > .env.test > 代码默认值`
+`进程环境变量 > .env.local > .env.production > .env.development > .env.test > ~/.nous/.env > 代码默认值`
+
+说明：`~/.nous/.env` 用于用户级共享默认值（例如 API Key）；端口等项目/worktree 专属配置应继续放在项目目录下的 `.env.local`。
 
 ## 2) 通用环境变量（NOUS_GENAI_*）
 

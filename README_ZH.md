@@ -232,8 +232,6 @@ uv run pytest tests/ -v
 ## 文档
 
 - [配置说明](docs/CONFIGURATION.md)
-- [架构设计](docs/ARCHITECTURE_DESIGN.md)
-- [MCP Server 安全审查](docs/MCP_SERVER_CLI_SECURITY_REVIEW.md)
 - [贡献指南](CONTRIBUTING.md)
 - [更新日志](CHANGELOG.md)
 

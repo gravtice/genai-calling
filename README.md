@@ -233,8 +233,6 @@ uv run pytest tests/ -v
 ## Docs
 
 - [Configuration](docs/CONFIGURATION.md)
-- [Architecture](docs/ARCHITECTURE_DESIGN.md)
-- [MCP Server Security Review](docs/MCP_SERVER_CLI_SECURITY_REVIEW.md)
 - [Contributing](CONTRIBUTING.md)
 - [Changelog](CHANGELOG.md)
 

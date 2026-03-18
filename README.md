@@ -22,7 +22,7 @@ One interface for calling multimodal models; four ways to use: Skill, MCP, CLI, 
 ## Installation
 
 ```bash
-pip install gravtice-genai-calling
+pip install genai-calling
 ```
 
 Python import package is `gravtice`.

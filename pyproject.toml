@@ -3,8 +3,8 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gravtice-genai-calling"
-version = "0.1.5"
+name = "genai-calling"
+version = "0.1.6"
 description = "Single-endpoint GenAI SDK (multi-provider, multimodal)"
 readme = "README.md"
 requires-python = ">=3.10"

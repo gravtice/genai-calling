@@ -23,7 +23,7 @@ English README: `README.md`
 
 ```bash
 # 从 PyPI 安装
-pip install gravtice-genai-calling
+pip install genai-calling
 
 # 从源码安装（开发）
 pip install -e .

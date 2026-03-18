@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 class TestCliTimeoutHint(unittest.TestCase):
     def test_cli_prints_hint_on_running_job(self) -> None:
-        import nous.genai.cli as cli
-        from nous.genai.types import (
+        import gravtice.genai.cli as cli
+        from gravtice.genai.types import (
             Capability,
             GenerateRequest,
             GenerateResponse,

@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 class TestReasoningMapping(unittest.TestCase):
     def test_openai_chat_maps_reasoning_effort(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateParams,
             GenerateRequest,
             Message,
@@ -12,7 +12,7 @@ class TestReasoningMapping(unittest.TestCase):
             Part,
             ReasoningSpec,
         )
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         req = GenerateRequest(
             model="openai:gpt-4o-mini",
@@ -21,7 +21,7 @@ class TestReasoningMapping(unittest.TestCase):
             params=GenerateParams(reasoning=ReasoningSpec(effort="HIGH")),
         )
 
-        with patch("nous.genai.providers.openai.request_json") as request_json:
+        with patch("gravtice.genai.providers.openai.request_json") as request_json:
             request_json.return_value = {
                 "id": "chatcmpl_123",
                 "choices": [{"message": {"content": "ok"}}],
@@ -39,7 +39,7 @@ class TestReasoningMapping(unittest.TestCase):
             self.assertEqual(body.get("reasoning_effort"), "high")
 
     def test_openai_responses_maps_reasoning_effort(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateParams,
             GenerateRequest,
             Message,
@@ -47,7 +47,7 @@ class TestReasoningMapping(unittest.TestCase):
             Part,
             ReasoningSpec,
         )
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         req = GenerateRequest(
             model="openai:gpt-5.2",
@@ -56,7 +56,7 @@ class TestReasoningMapping(unittest.TestCase):
             params=GenerateParams(reasoning=ReasoningSpec(effort="low")),
         )
 
-        with patch("nous.genai.providers.openai.request_json") as request_json:
+        with patch("gravtice.genai.providers.openai.request_json") as request_json:
             request_json.return_value = {
                 "id": "resp_123",
                 "status": "completed",
@@ -81,7 +81,7 @@ class TestReasoningMapping(unittest.TestCase):
             self.assertEqual(body.get("reasoning"), {"effort": "low"})
 
     def test_anthropic_maps_reasoning_effort_to_budget(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateParams,
             GenerateRequest,
             Message,
@@ -90,7 +90,7 @@ class TestReasoningMapping(unittest.TestCase):
             Part,
             ReasoningSpec,
         )
-        from nous.genai.providers.anthropic import AnthropicAdapter
+        from gravtice.genai.providers.anthropic import AnthropicAdapter
 
         req = GenerateRequest(
             model="anthropic:claude-sonnet-4-5",
@@ -101,7 +101,7 @@ class TestReasoningMapping(unittest.TestCase):
             params=GenerateParams(reasoning=ReasoningSpec(effort="minimal")),
         )
 
-        with patch("nous.genai.providers.anthropic.request_json") as request_json:
+        with patch("gravtice.genai.providers.anthropic.request_json") as request_json:
             request_json.return_value = {
                 "id": "msg_123",
                 "content": [{"type": "text", "text": "ok"}],
@@ -121,7 +121,7 @@ class TestReasoningMapping(unittest.TestCase):
             )
 
     def test_gemini_maps_reasoning_effort_to_thinking_level_for_gemini3(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateParams,
             GenerateRequest,
             Message,
@@ -129,7 +129,7 @@ class TestReasoningMapping(unittest.TestCase):
             Part,
             ReasoningSpec,
         )
-        from nous.genai.providers.gemini import GeminiAdapter
+        from gravtice.genai.providers.gemini import GeminiAdapter
 
         req = GenerateRequest(
             model="google:gemini-3-pro-preview",
@@ -138,7 +138,7 @@ class TestReasoningMapping(unittest.TestCase):
             params=GenerateParams(reasoning=ReasoningSpec(effort="high")),
         )
 
-        with patch("nous.genai.providers.gemini.request_json") as request_json:
+        with patch("gravtice.genai.providers.gemini.request_json") as request_json:
             request_json.return_value = {
                 "candidates": [{"content": {"parts": [{"text": "ok"}]}}]
             }
@@ -157,7 +157,7 @@ class TestReasoningMapping(unittest.TestCase):
             self.assertEqual(thinking_cfg.get("thinkingLevel"), "high")
 
     def test_gemini_maps_reasoning_effort_to_thinking_budget_for_gemini2(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateParams,
             GenerateRequest,
             Message,
@@ -165,7 +165,7 @@ class TestReasoningMapping(unittest.TestCase):
             Part,
             ReasoningSpec,
         )
-        from nous.genai.providers.gemini import GeminiAdapter
+        from gravtice.genai.providers.gemini import GeminiAdapter
 
         req = GenerateRequest(
             model="google:gemini-2.5-flash",
@@ -174,7 +174,7 @@ class TestReasoningMapping(unittest.TestCase):
             params=GenerateParams(reasoning=ReasoningSpec(effort="low")),
         )
 
-        with patch("nous.genai.providers.gemini.request_json") as request_json:
+        with patch("gravtice.genai.providers.gemini.request_json") as request_json:
             request_json.return_value = {
                 "candidates": [{"content": {"parts": [{"text": "ok"}]}}]
             }
@@ -193,7 +193,7 @@ class TestReasoningMapping(unittest.TestCase):
             self.assertEqual(thinking_cfg.get("thinkingBudget"), 1024)
 
     def test_gemini_ignores_reasoning_for_unsupported_models(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateParams,
             GenerateRequest,
             Message,
@@ -201,7 +201,7 @@ class TestReasoningMapping(unittest.TestCase):
             Part,
             ReasoningSpec,
         )
-        from nous.genai.providers.gemini import GeminiAdapter
+        from gravtice.genai.providers.gemini import GeminiAdapter
 
         req = GenerateRequest(
             model="google:gemini-1.5-flash",
@@ -210,7 +210,7 @@ class TestReasoningMapping(unittest.TestCase):
             params=GenerateParams(reasoning=ReasoningSpec(effort="high")),
         )
 
-        with patch("nous.genai.providers.gemini.request_json") as request_json:
+        with patch("gravtice.genai.providers.gemini.request_json") as request_json:
             request_json.return_value = {
                 "candidates": [{"content": {"parts": [{"text": "ok"}]}}]
             }

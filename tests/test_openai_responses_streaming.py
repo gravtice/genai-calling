@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 class TestOpenAIResponsesStreaming(unittest.TestCase):
     def _request(self):
-        from nous.genai.types import GenerateRequest, Message, OutputSpec, Part
+        from gravtice.genai.types import GenerateRequest, Message, OutputSpec, Part
 
         return GenerateRequest(
             model="openai:gpt-5.2",
@@ -13,8 +13,8 @@ class TestOpenAIResponsesStreaming(unittest.TestCase):
         )
 
     def test_error_event_raises_provider_error(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai import GenAIError
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         req = self._request()
         adapter = OpenAIAdapter(
@@ -25,7 +25,7 @@ class TestOpenAIResponsesStreaming(unittest.TestCase):
         )
 
         with patch(
-            "nous.genai.providers.openai.request_stream_json_sse"
+            "gravtice.genai.providers.openai.request_stream_json_sse"
         ) as request_stream_json_sse:
             request_stream_json_sse.return_value = iter(
                 [
@@ -52,8 +52,8 @@ class TestOpenAIResponsesStreaming(unittest.TestCase):
             self.assertIn("Something went wrong", str(cm.exception))
 
     def test_failed_event_raises_provider_error(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai import GenAIError
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         req = self._request()
         adapter = OpenAIAdapter(
@@ -64,7 +64,7 @@ class TestOpenAIResponsesStreaming(unittest.TestCase):
         )
 
         with patch(
-            "nous.genai.providers.openai.request_stream_json_sse"
+            "gravtice.genai.providers.openai.request_stream_json_sse"
         ) as request_stream_json_sse:
             request_stream_json_sse.return_value = iter(
                 [
@@ -89,8 +89,8 @@ class TestOpenAIResponsesStreaming(unittest.TestCase):
             self.assertIn("failed to generate", str(cm.exception))
 
     def test_incomplete_event_raises_provider_error(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai import GenAIError
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         req = self._request()
         adapter = OpenAIAdapter(
@@ -101,7 +101,7 @@ class TestOpenAIResponsesStreaming(unittest.TestCase):
         )
 
         with patch(
-            "nous.genai.providers.openai.request_stream_json_sse"
+            "gravtice.genai.providers.openai.request_stream_json_sse"
         ) as request_stream_json_sse:
             request_stream_json_sse.return_value = iter(
                 [

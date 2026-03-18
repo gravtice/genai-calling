@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-03-18
+
+### Changed
+
+- Publish package metadata under `gravtice-genai-calling`
+- Rename Python import package from `nous` to `gravtice`
+- Use only `GENAI_CALLING_*` env vars and `~/.genai-calling/.env`
+
 ## [0.1.4] - 2026-03-11
 
 ### Changed
@@ -41,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of nous-genai
+- Initial release of genai-calling
 - Unified `Client.generate()` API for multi-provider, multi-modal generation
 - Support for multiple providers:
   - OpenAI (GPT-4, DALL-E, Whisper, TTS)
@@ -73,14 +81,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-- Default rejection of private/loopback URLs (configurable via `NOUS_GENAI_ALLOW_PRIVATE_URLS`)
-- URL download hard limit (default 128MiB, configurable via `NOUS_GENAI_URL_DOWNLOAD_MAX_BYTES`)
+- Default rejection of private/loopback URLs (configurable via `GENAI_CALLING_ALLOW_PRIVATE_URLS`)
+- URL download hard limit (default 128MiB, configurable via `GENAI_CALLING_URL_DOWNLOAD_MAX_BYTES`)
 - MCP artifact memory limits with LRU eviction
 - Signed artifact URLs for authenticated access
 
-[Unreleased]: https://github.com/gravtice/nous-genai/compare/v0.1.4...HEAD
-[0.1.4]: https://github.com/gravtice/nous-genai/compare/v0.1.3...v0.1.4
-[0.1.3]: https://github.com/gravtice/nous-genai/compare/v0.1.2...v0.1.3
-[0.1.2]: https://github.com/gravtice/nous-genai/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/gravtice/nous-genai/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/gravtice/nous-genai/releases/tag/v0.1.0
+[Unreleased]: https://github.com/gravtice/genai-calling/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/gravtice/genai-calling/compare/v0.1.4...v0.1.5
+[0.1.4]: https://github.com/gravtice/genai-calling/compare/v0.1.3...v0.1.4
+[0.1.3]: https://github.com/gravtice/genai-calling/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/gravtice/genai-calling/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/gravtice/genai-calling/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/gravtice/genai-calling/releases/tag/v0.1.0

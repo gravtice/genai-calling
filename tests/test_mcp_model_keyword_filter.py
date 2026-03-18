@@ -19,10 +19,10 @@ def _call_tool(server, name: str, args: dict) -> object:
 
 class TestMcpModelKeywordFilter(unittest.TestCase):
     def test_list_available_models_filters_by_keyword(self) -> None:
-        from nous.genai.mcp_server import build_server
+        from gravtice.genai.mcp_server import build_server
 
         with patch(
-            "nous.genai.mcp_server.Client.list_available_models",
+            "gravtice.genai.mcp_server.Client.list_available_models",
             return_value=["gpt-4o-mini", "gpt-image-1"],
         ):
             server = build_server(host="127.0.0.1", port=7001, model_keywords=["image"])
@@ -33,7 +33,7 @@ class TestMcpModelKeywordFilter(unittest.TestCase):
         self.assertEqual(models, ["openai:gpt-image-1"])
 
     def test_list_all_available_models_filters_by_keyword_or(self) -> None:
-        from nous.genai.mcp_server import build_server
+        from gravtice.genai.mcp_server import build_server
 
         all_models = [
             "openai:gpt-4o-mini",
@@ -42,7 +42,7 @@ class TestMcpModelKeywordFilter(unittest.TestCase):
             "tuzi-openai:gpt-image-1",
         ]
         with patch(
-            "nous.genai.mcp_server.Client.list_all_available_models",
+            "gravtice.genai.mcp_server.Client.list_all_available_models",
             return_value=all_models,
         ):
             server = build_server(
@@ -62,7 +62,7 @@ class TestMcpModelKeywordFilter(unittest.TestCase):
         )
 
     def test_generate_rejects_disallowed_model(self) -> None:
-        from nous.genai.mcp_server import build_server
+        from gravtice.genai.mcp_server import build_server
 
         req_dict = {
             "model": "openai:gpt-4o-mini",
@@ -70,7 +70,7 @@ class TestMcpModelKeywordFilter(unittest.TestCase):
             "output": {"modalities": ["text"]},
         }
         with patch(
-            "nous.genai.mcp_server.Client.generate",
+            "gravtice.genai.mcp_server.Client.generate",
             side_effect=AssertionError("should not call provider"),
         ):
             server = build_server(host="127.0.0.1", port=7001, model_keywords=["image"])

@@ -5,9 +5,9 @@ from unittest.mock import patch
 
 class TestMcpInputPolicy(unittest.TestCase):
     def test_mcp_transport_rejects_path_source(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.client import Client
-        from nous.genai.types import (
+        from gravtice.genai import GenAIError
+        from gravtice.genai.client import Client
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -15,7 +15,7 @@ class TestMcpInputPolicy(unittest.TestCase):
             PartSourcePath,
         )
 
-        with patch.dict(os.environ, {"NOUS_GENAI_TRANSPORT": "sse"}, clear=False):
+        with patch.dict(os.environ, {"GENAI_CALLING_TRANSPORT": "sse"}, clear=False):
             client = Client()
             req = GenerateRequest(
                 model="unknown:demo",
@@ -39,9 +39,9 @@ class TestMcpInputPolicy(unittest.TestCase):
             self.assertIn("MCP transport does not support", cm.exception.info.message)
 
     def test_mcp_transport_rejects_bytes_source(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.client import Client
-        from nous.genai.types import (
+        from gravtice.genai import GenAIError
+        from gravtice.genai.client import Client
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -49,7 +49,7 @@ class TestMcpInputPolicy(unittest.TestCase):
             PartSourceBytes,
         )
 
-        with patch.dict(os.environ, {"NOUS_GENAI_TRANSPORT": "sse"}, clear=False):
+        with patch.dict(os.environ, {"GENAI_CALLING_TRANSPORT": "sse"}, clear=False):
             client = Client()
             req = GenerateRequest(
                 model="unknown:demo",
@@ -73,9 +73,9 @@ class TestMcpInputPolicy(unittest.TestCase):
             self.assertIn("MCP transport does not support", cm.exception.info.message)
 
     def test_mcp_transport_allows_base64_source(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.client import Client
-        from nous.genai.types import (
+        from gravtice.genai import GenAIError
+        from gravtice.genai.client import Client
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -83,7 +83,7 @@ class TestMcpInputPolicy(unittest.TestCase):
             PartSourceBytes,
         )
 
-        with patch.dict(os.environ, {"NOUS_GENAI_TRANSPORT": "sse"}, clear=False):
+        with patch.dict(os.environ, {"GENAI_CALLING_TRANSPORT": "sse"}, clear=False):
             client = Client()
             req = GenerateRequest(
                 model="unknown:demo",

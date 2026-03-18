@@ -13,7 +13,7 @@ class TestMcpServerTransports(unittest.TestCase):
         except ModuleNotFoundError:
             self.skipTest("missing dependency: starlette")
 
-        from nous.genai.mcp_server import build_http_app, build_server
+        from gravtice.genai.mcp_server import build_http_app, build_server
 
         server = build_server(host="127.0.0.1", port=7001)
         app = build_http_app(server)

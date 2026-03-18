@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 class TestCliPromptPath(unittest.TestCase):
     def test_prompt_path_reads_file_when_prompt_missing(self) -> None:
-        import nous.genai.cli as cli
-        from nous.genai.types import (
+        import gravtice.genai.cli as cli
+        from gravtice.genai.types import (
             Capability,
             GenerateRequest,
             GenerateResponse,
@@ -63,8 +63,8 @@ class TestCliPromptPath(unittest.TestCase):
                 pass
 
     def test_prompt_takes_priority_over_prompt_path(self) -> None:
-        import nous.genai.cli as cli
-        from nous.genai.types import (
+        import gravtice.genai.cli as cli
+        from gravtice.genai.types import (
             Capability,
             GenerateRequest,
             GenerateResponse,

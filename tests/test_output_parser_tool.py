@@ -5,8 +5,8 @@ from typing_extensions import TypedDict
 
 class TestOutputParserTool(unittest.TestCase):
     def test_build_output_parser_tool_accepts_python_types(self) -> None:
-        from nous.genai._internal.errors import GenAIError
-        from nous.genai.tools.output_parser import build_output_parser_tool
+        from gravtice.genai._internal.errors import GenAIError
+        from gravtice.genai.tools.output_parser import build_output_parser_tool
 
         tool = build_output_parser_tool(
             {"type": "object", "properties": {"a": {"type": "integer"}}}
@@ -50,9 +50,9 @@ class TestOutputParserTool(unittest.TestCase):
                 self.assertIsInstance(out_schema, dict)
 
     def test_extract_output_from_response(self) -> None:
-        from nous.genai._internal.errors import GenAIError
-        from nous.genai.tools.output_parser import extract_output_from_response
-        from nous.genai.types import GenerateResponse, Message, Part
+        from gravtice.genai._internal.errors import GenAIError
+        from gravtice.genai.tools.output_parser import extract_output_from_response
+        from gravtice.genai.types import GenerateResponse, Message, Part
 
         resp = GenerateResponse(
             id="r1",
@@ -86,9 +86,9 @@ class TestOutputParserTool(unittest.TestCase):
             extract_output_from_response(resp2)
 
     def test_parse_output(self) -> None:
-        from nous.genai._internal.errors import GenAIError
-        from nous.genai.tools.output_parser import parse_output
-        from nous.genai.types import (
+        from gravtice.genai._internal.errors import GenAIError
+        from gravtice.genai.tools.output_parser import parse_output
+        from gravtice.genai.types import (
             Capability,
             GenerateRequest,
             GenerateResponse,

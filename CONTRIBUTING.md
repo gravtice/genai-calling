@@ -1,6 +1,6 @@
-# Contributing to nous-genai
+# Contributing to genai-calling
 
-Thank you for your interest in contributing to nous-genai!
+Thank you for your interest in contributing to genai-calling!
 
 ## Development Setup
 
@@ -13,11 +13,11 @@ Thank you for your interest in contributing to nous-genai!
 
 ```bash
 # Clone the repository
-git clone https://github.com/gravtice/nous-genai.git
-cd nous-genai
+git clone https://github.com/gravtice/genai-calling.git
+cd genai-calling
 
 # Install dependencies with uv
-uv sync
+uv sync --group dev
 
 # Or with pip
 pip install -e .
@@ -27,13 +27,13 @@ pip install -e .
 
 ```bash
 # Run all tests
-uv run pytest tests/ -v
+uv run python -m pytest tests/ -v
 
 # Run specific test file
-uv run pytest tests/test_client_timeout.py -v
+uv run python -m pytest tests/test_client_timeout.py -v
 
 # Run with coverage (requires pytest-cov)
-uv run pytest tests/ --cov=nous --cov-report=term-missing
+uv run python -m pytest tests/ --cov=gravtice --cov-report=term-missing
 ```
 
 ### Code Style
@@ -90,7 +90,7 @@ docs: update README examples
 1. Fork the repository
 2. Create a feature branch from `main`
 3. Make your changes
-4. Ensure all tests pass: `uv run pytest tests/ -v`
+4. Ensure all tests pass: `uv run python -m pytest tests/ -v`
 5. Ensure code style checks pass: `uv run ruff check .`
 6. Submit a pull request
 
@@ -115,11 +115,11 @@ How were these changes tested?
 
 ## Adding a New Provider
 
-1. Create adapter in `nous/genai/providers/<provider>.py`
+1. Create adapter in `gravtice/genai/providers/<provider>.py`
 2. Implement the adapter interface (see existing adapters for reference)
-3. Register in `nous/genai/providers/__init__.py`
-4. Add model catalog data in `nous/genai/reference/model_catalog_data/<provider>.py`
-5. Update `nous/genai/client.py` to initialize the adapter
+3. Register in `gravtice/genai/providers/__init__.py`
+4. Add model catalog data in `gravtice/genai/reference/model_catalog_data/<provider>.py`
+5. Update `gravtice/genai/client.py` to initialize the adapter
 6. Add tests in `tests/`
 7. Update documentation
 
@@ -128,7 +128,7 @@ How were these changes tested?
 When reporting issues, please include:
 
 - Python version
-- nous-genai version
+- genai-calling version
 - Minimal reproducible example
 - Expected vs actual behavior
 - Full error traceback (if applicable)

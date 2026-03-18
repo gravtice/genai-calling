@@ -3,8 +3,8 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "nous-genai"
-version = "0.1.4"
+name = "gravtice-genai-calling"
+version = "0.1.5"
 description = "Single-endpoint GenAI SDK (multi-provider, multimodal)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -19,19 +19,19 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/gravtice/nous-genai"
-Issues = "https://github.com/gravtice/nous-genai/issues"
+Homepage = "https://github.com/gravtice/genai-calling"
+Issues = "https://github.com/gravtice/genai-calling/issues"
 
 [dependency-groups]
 dev = ["mypy>=1.10.0", "pytest>=8.0.0", "ruff>=0.5.0"]
 
 [project.scripts]
-genai = "nous.genai.cli:main"
-genai-mcp-server = "nous.genai.mcp_server:main"
-genai-mcp-cli = "nous.genai.mcp_cli:main"
+genai = "gravtice.genai.cli:main"
+genai-mcp-server = "gravtice.genai.mcp_server:main"
+genai-mcp-cli = "gravtice.genai.mcp_cli:main"
 
 [tool.setuptools.packages.find]
-include = ["nous*"]
+include = ["gravtice*"]
 
 [tool.setuptools.package-data]
-nous = ["py.typed"]
+gravtice = ["py.typed"]

@@ -3,7 +3,7 @@ import unittest
 
 class TestCapabilityRules(unittest.TestCase):
     def test_openai_adapter_modalities_match_series_rules(self) -> None:
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         adapter = OpenAIAdapter(api_key="__demo__")
 
@@ -32,7 +32,7 @@ class TestCapabilityRules(unittest.TestCase):
         self.assertEqual(cap_z_image.output_modalities, {"image"})
 
     def test_gemini_adapter_modalities_match_series_rules(self) -> None:
-        from nous.genai.providers.gemini import GeminiAdapter
+        from gravtice.genai.providers.gemini import GeminiAdapter
 
         adapter = GeminiAdapter(
             api_key="__demo__",

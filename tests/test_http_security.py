@@ -54,7 +54,7 @@ class _FakeHttpConnection:
 
 class TestUrlDownloadPinsIpAgainstDnsRebinding(unittest.TestCase):
     def test_download_resolves_once_and_pins_connect_ip(self) -> None:
-        from nous.genai._internal.http import download_to_file
+        from gravtice.genai._internal.http import download_to_file
 
         calls: dict[str, int] = {"rebind.example": 0}
 
@@ -96,11 +96,11 @@ class TestUrlDownloadPinsIpAgainstDnsRebinding(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="genaisdk-test-") as d:
             out_path = os.path.join(d, "out.bin")
             with patch(
-                "nous.genai._internal.http.socket.getaddrinfo",
+                "gravtice.genai._internal.http.socket.getaddrinfo",
                 side_effect=_fake_getaddrinfo,
             ):
                 with patch(
-                    "nous.genai._internal.http._make_connection",
+                    "gravtice.genai._internal.http._make_connection",
                     side_effect=_fake_make_connection,
                 ):
                     download_to_file(
@@ -120,7 +120,7 @@ class TestMakeConnectionProxyHttpsTarget(unittest.TestCase):
         import urllib.parse
         import http.client
 
-        from nous.genai._internal.http import _make_connection
+        from gravtice.genai._internal.http import _make_connection
 
         parsed = urllib.parse.urlparse("https://example.com/v1/models")
         conn = _make_connection(parsed, 0.1, proxy_url="http://proxy.local:8080")
@@ -133,8 +133,8 @@ class TestMakeConnectionProxyHttpsTarget(unittest.TestCase):
 
 class TestUrlDownloadRedirectAndLimits(unittest.TestCase):
     def test_redirect_to_private_host_is_blocked(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai._internal.http import download_to_file
+        from gravtice.genai import GenAIError
+        from gravtice.genai._internal.http import download_to_file
 
         import ipaddress
 
@@ -163,14 +163,14 @@ class TestUrlDownloadRedirectAndLimits(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="genaisdk-test-") as d:
             out_path = os.path.join(d, "out.bin")
             with patch.dict(
-                os.environ, {"NOUS_GENAI_ALLOW_PRIVATE_URLS": "0"}, clear=False
+                os.environ, {"GENAI_CALLING_ALLOW_PRIVATE_URLS": "0"}, clear=False
             ):
                 with patch(
-                    "nous.genai._internal.http._resolve_url_host_ips",
+                    "gravtice.genai._internal.http._resolve_url_host_ips",
                     side_effect=_fake_resolve,
                 ):
                     with patch(
-                        "nous.genai._internal.http._make_connection",
+                        "gravtice.genai._internal.http._make_connection",
                         side_effect=_fake_make_connection,
                     ):
                         with self.assertRaises(GenAIError) as cm:
@@ -185,8 +185,8 @@ class TestUrlDownloadRedirectAndLimits(unittest.TestCase):
         self.assertEqual(calls, ["public.example"])
 
     def test_download_rejects_content_length_over_max_bytes(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai._internal.http import download_to_file
+        from gravtice.genai import GenAIError
+        from gravtice.genai._internal.http import download_to_file
 
         import ipaddress
 
@@ -209,11 +209,11 @@ class TestUrlDownloadRedirectAndLimits(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="genaisdk-test-") as d:
             out_path = os.path.join(d, "out.bin")
             with patch(
-                "nous.genai._internal.http._resolve_url_host_ips",
+                "gravtice.genai._internal.http._resolve_url_host_ips",
                 side_effect=_fake_resolve,
             ):
                 with patch(
-                    "nous.genai._internal.http._make_connection",
+                    "gravtice.genai._internal.http._make_connection",
                     side_effect=_fake_make_connection,
                 ):
                     with self.assertRaises(GenAIError) as cm:
@@ -228,8 +228,8 @@ class TestUrlDownloadRedirectAndLimits(unittest.TestCase):
         self.assertIn("url download too large", cm.exception.info.message)
 
     def test_download_rejects_body_exceeding_max_bytes(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai._internal.http import download_to_file
+        from gravtice.genai import GenAIError
+        from gravtice.genai._internal.http import download_to_file
 
         import ipaddress
 
@@ -250,11 +250,11 @@ class TestUrlDownloadRedirectAndLimits(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="genaisdk-test-") as d:
             out_path = os.path.join(d, "out.bin")
             with patch(
-                "nous.genai._internal.http._resolve_url_host_ips",
+                "gravtice.genai._internal.http._resolve_url_host_ips",
                 side_effect=_fake_resolve,
             ):
                 with patch(
-                    "nous.genai._internal.http._make_connection",
+                    "gravtice.genai._internal.http._make_connection",
                     side_effect=_fake_make_connection,
                 ):
                     with self.assertRaises(GenAIError) as cm:
@@ -270,8 +270,8 @@ class TestUrlDownloadRedirectAndLimits(unittest.TestCase):
         self.assertIn("url download exceeded limit", cm.exception.info.message)
 
     def test_download_timeout_maps_to_timeout_error(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai._internal.http import download_to_file
+        from gravtice.genai import GenAIError
+        from gravtice.genai._internal.http import download_to_file
 
         import ipaddress
         import socket
@@ -305,11 +305,11 @@ class TestUrlDownloadRedirectAndLimits(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="genaisdk-test-") as d:
             out_path = os.path.join(d, "out.bin")
             with patch(
-                "nous.genai._internal.http._resolve_url_host_ips",
+                "gravtice.genai._internal.http._resolve_url_host_ips",
                 side_effect=_fake_resolve,
             ):
                 with patch(
-                    "nous.genai._internal.http._make_connection",
+                    "gravtice.genai._internal.http._make_connection",
                     side_effect=_fake_make_connection,
                 ):
                     with self.assertRaises(GenAIError) as cm:

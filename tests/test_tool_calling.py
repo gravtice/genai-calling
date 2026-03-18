@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 class TestToolCalling(unittest.TestCase):
     def test_openai_chat_tools_and_tool_choice(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -13,7 +13,7 @@ class TestToolCalling(unittest.TestCase):
             Tool,
             ToolChoice,
         )
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         req = GenerateRequest(
             model="openai:gpt-4o-mini",
@@ -57,7 +57,7 @@ class TestToolCalling(unittest.TestCase):
             tool_choice=ToolChoice(mode="tool", name="sum"),
         )
 
-        with patch("nous.genai.providers.openai.request_json") as request_json:
+        with patch("gravtice.genai.providers.openai.request_json") as request_json:
             request_json.return_value = {
                 "id": "chatcmpl_123",
                 "choices": [
@@ -113,7 +113,7 @@ class TestToolCalling(unittest.TestCase):
             )
 
     def test_openai_responses_tools_and_tool_output(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -121,7 +121,7 @@ class TestToolCalling(unittest.TestCase):
             Tool,
             ToolChoice,
         )
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         req = GenerateRequest(
             model="openai:gpt-5.2",
@@ -141,7 +141,7 @@ class TestToolCalling(unittest.TestCase):
             tool_choice=ToolChoice(mode="required"),
         )
 
-        with patch("nous.genai.providers.openai.request_json") as request_json:
+        with patch("gravtice.genai.providers.openai.request_json") as request_json:
             request_json.return_value = {
                 "id": "resp_123",
                 "status": "completed",
@@ -194,7 +194,7 @@ class TestToolCalling(unittest.TestCase):
     def test_tuzi_openai_responses_tool_choice_tool_falls_back_to_required(
         self,
     ) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -202,7 +202,7 @@ class TestToolCalling(unittest.TestCase):
             Tool,
             ToolChoice,
         )
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         req = GenerateRequest(
             model="tuzi-openai:gpt-4o-mini",
@@ -212,7 +212,7 @@ class TestToolCalling(unittest.TestCase):
             tool_choice=ToolChoice(mode="tool", name="ping"),
         )
 
-        with patch("nous.genai.providers.openai.request_json") as request_json:
+        with patch("gravtice.genai.providers.openai.request_json") as request_json:
             request_json.return_value = {
                 "id": "resp_123",
                 "status": "completed",
@@ -237,7 +237,7 @@ class TestToolCalling(unittest.TestCase):
             self.assertEqual(body["tool_choice"], "required")
 
     def test_gemini_tools_and_tool_config(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -245,7 +245,7 @@ class TestToolCalling(unittest.TestCase):
             Tool,
             ToolChoice,
         )
-        from nous.genai.providers.gemini import GeminiAdapter
+        from gravtice.genai.providers.gemini import GeminiAdapter
 
         req = GenerateRequest(
             model="google:gemini-2.5-flash",
@@ -261,7 +261,7 @@ class TestToolCalling(unittest.TestCase):
             tool_choice=ToolChoice(mode="tool", name="sum"),
         )
 
-        with patch("nous.genai.providers.gemini.request_json") as request_json:
+        with patch("gravtice.genai.providers.gemini.request_json") as request_json:
             request_json.return_value = {
                 "candidates": [
                     {
@@ -305,7 +305,7 @@ class TestToolCalling(unittest.TestCase):
             self.assertEqual(contents[1]["parts"][0]["functionResponse"]["name"], "sum")
 
     def test_anthropic_tools_and_tool_choice(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -314,7 +314,7 @@ class TestToolCalling(unittest.TestCase):
             Tool,
             ToolChoice,
         )
-        from nous.genai.providers.anthropic import AnthropicAdapter
+        from gravtice.genai.providers.anthropic import AnthropicAdapter
 
         req = GenerateRequest(
             model="anthropic:claude-3-5-sonnet-20240620",
@@ -336,7 +336,7 @@ class TestToolCalling(unittest.TestCase):
             tool_choice=ToolChoice(mode="tool", name="sum"),
         )
 
-        with patch("nous.genai.providers.anthropic.request_json") as request_json:
+        with patch("gravtice.genai.providers.anthropic.request_json") as request_json:
             request_json.return_value = {
                 "id": "msg_123",
                 "content": [

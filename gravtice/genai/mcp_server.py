@@ -16,6 +16,11 @@ from typing_extensions import TypedDict
 from urllib.parse import parse_qs
 from uuid import uuid4
 
+from ._internal.config import (
+    format_prefixed_env_names,
+    get_prefixed_env,
+    get_prefixed_env_int,
+)
 from .client import Client
 from .types import (
     GenerateRequest,
@@ -27,7 +32,7 @@ from .types import (
 _MCP_GENERATE_REQUEST_SCHEMA: dict = {
     "type": "object",
     "title": "GenerateRequest",
-    "description": 'nous-genai request object. `model` must be "{provider}:{model_id}" (e.g. "openai:gpt-4o-mini").',
+    "description": 'genai-calling request object. `model` must be "{provider}:{model_id}" (e.g. "openai:gpt-4o-mini").',
     "required": ["model", "input", "output"],
     "properties": {
         "model": {
@@ -225,8 +230,11 @@ class McpGenerateResponse(McpGenerateResponseBase, total=False):
 
 
 _REQUEST_TOKEN: ContextVar[str | None] = ContextVar(
-    "nous_genai_mcp_request_token", default=None
+    "genai_calling_mcp_request_token", default=None
 )
+
+_MCP_BEARER_TOKEN_ENV = format_prefixed_env_names("MCP_BEARER_TOKEN")
+_MCP_TOKEN_RULES_ENV = format_prefixed_env_names("MCP_TOKEN_RULES")
 
 
 @dataclass(frozen=True, slots=True)
@@ -257,7 +265,7 @@ def _parse_mcp_token_scopes(raw: str) -> dict[str, McpTokenScope]:
             for token, allow in parsed.items():
                 if not isinstance(token, str) or not token.strip():
                     raise ValueError(
-                        "invalid NOUS_GENAI_MCP_TOKEN_RULES: token must be a non-empty string"
+                        f"invalid {_MCP_TOKEN_RULES_ENV}: token must be a non-empty string"
                     )
                 if allow is None:
                     items.append(f"{token.strip()}: []")
@@ -266,7 +274,7 @@ def _parse_mcp_token_scopes(raw: str) -> dict[str, McpTokenScope]:
                     isinstance(x, str) for x in allow
                 ):
                     raise ValueError(
-                        "invalid NOUS_GENAI_MCP_TOKEN_RULES: each token value must be a list of strings"
+                        f"invalid {_MCP_TOKEN_RULES_ENV}: each token value must be a list of strings"
                     )
                 joined = " ".join(a.strip() for a in allow if a.strip())
                 items.append(f"{token.strip()}: [{joined}]")
@@ -287,22 +295,22 @@ def _parse_mcp_token_scopes(raw: str) -> dict[str, McpTokenScope]:
             continue
         if ":" not in entry:
             raise ValueError(
-                f"invalid NOUS_GENAI_MCP_TOKEN_RULES entry (missing ':'): {entry}"
+                f"invalid {_MCP_TOKEN_RULES_ENV} entry (missing ':'): {entry}"
             )
         token, spec = entry.split(":", 1)
         token = token.strip()
         spec = spec.strip()
         if not token:
             raise ValueError(
-                f"invalid NOUS_GENAI_MCP_TOKEN_RULES entry (empty token): {entry}"
+                f"invalid {_MCP_TOKEN_RULES_ENV} entry (empty token): {entry}"
             )
         if token in scopes:
             raise ValueError(
-                f"invalid NOUS_GENAI_MCP_TOKEN_RULES (duplicate token): {token}"
+                f"invalid {_MCP_TOKEN_RULES_ENV} (duplicate token): {token}"
             )
         if not (spec.startswith("[") and spec.endswith("]")):
             raise ValueError(
-                f"invalid NOUS_GENAI_MCP_TOKEN_RULES entry (expected '[...]'): {entry}"
+                f"invalid {_MCP_TOKEN_RULES_ENV} entry (expected '[...]'): {entry}"
             )
         inner = spec[1:-1].strip()
         providers_all: set[str] = set()
@@ -316,7 +324,7 @@ def _parse_mcp_token_scopes(raw: str) -> dict[str, McpTokenScope]:
                 model_id = model_id.strip()
                 if not provider or not model_id:
                     raise ValueError(
-                        f"invalid NOUS_GENAI_MCP_TOKEN_RULES entry item: {item}"
+                        f"invalid {_MCP_TOKEN_RULES_ENV} entry item: {item}"
                     )
                 if model_id == "*":
                     providers_all.add(provider)
@@ -335,20 +343,9 @@ def _parse_mcp_token_scopes(raw: str) -> dict[str, McpTokenScope]:
     return scopes
 
 
-def _env_int(name: str, default: int) -> int:
-    raw = os.environ.get(name)
-    if raw is None:
-        return default
-    try:
-        value = int(raw)
-    except ValueError:
-        return default
-    return value
-
-
 def _get_host_port() -> tuple[str, int]:
-    host = os.environ.get("NOUS_GENAI_MCP_HOST", "").strip() or "127.0.0.1"
-    port = _env_int("NOUS_GENAI_MCP_PORT", 6001)
+    host = (get_prefixed_env("MCP_HOST") or "").strip() or "127.0.0.1"
+    port = get_prefixed_env_int("MCP_PORT", 6001)
     if port < 1:
         port = 1
     if port > 65535:
@@ -393,10 +390,10 @@ def build_server(
     from starlette.requests import Request
     from starlette.responses import Response
 
-    os.environ["NOUS_GENAI_TRANSPORT"] = "mcp"
+    os.environ["GENAI_CALLING_TRANSPORT"] = "mcp"
     if host is None or port is None:
         host, port = _get_host_port()
-    server = FastMCP(name="nous-genai", host=host, port=port)
+    server = FastMCP(name="genai-calling", host=host, port=port)
 
     keywords: list[str] = []
     for raw in model_keywords or []:
@@ -413,18 +410,18 @@ def build_server(
         candidate = model.strip().lower()
         return any(k in candidate for k in keywords)
 
-    max_artifacts = _env_int("NOUS_GENAI_MAX_ARTIFACTS", 64)
+    max_artifacts = get_prefixed_env_int("MAX_ARTIFACTS", 64)
     if max_artifacts < 1:
         max_artifacts = 1
-    max_artifact_bytes = _env_int("NOUS_GENAI_MAX_ARTIFACT_BYTES", 64 * 1024 * 1024)
+    max_artifact_bytes = get_prefixed_env_int("MAX_ARTIFACT_BYTES", 64 * 1024 * 1024)
     if max_artifact_bytes < 0:
         max_artifact_bytes = 0
-    artifact_url_ttl_seconds = _env_int("NOUS_GENAI_ARTIFACT_URL_TTL_SECONDS", 600)
+    artifact_url_ttl_seconds = get_prefixed_env_int("ARTIFACT_URL_TTL_SECONDS", 600)
     if artifact_url_ttl_seconds < 1:
         artifact_url_ttl_seconds = 1
 
     def _public_base_url() -> str:
-        base = os.environ.get("NOUS_GENAI_MCP_PUBLIC_BASE_URL", "").strip()
+        base = (get_prefixed_env("MCP_PUBLIC_BASE_URL") or "").strip()
         if base:
             return base.rstrip("/")
         if host in {"0.0.0.0", "::"}:
@@ -882,7 +879,7 @@ def main(argv: list[str] | None = None) -> None:
 
     parser = argparse.ArgumentParser(
         prog="genai-mcp-server",
-        description="nous-genai MCP server (Streamable HTTP: /mcp, SSE: /sse)",
+        description="genai-calling MCP server (Streamable HTTP: /mcp, SSE: /sse)",
     )
     parser.add_argument(
         "--proxy",
@@ -892,7 +889,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--bearer-token",
         dest="bearer_token",
-        help="Require HTTP Authorization: Bearer <token> for all endpoints (or set NOUS_GENAI_MCP_BEARER_TOKEN).",
+        help="Require HTTP Authorization: Bearer <token> for all endpoints (or set GENAI_CALLING_MCP_BEARER_TOKEN).",
     )
     parser.add_argument(
         "--model-keyword",
@@ -901,13 +898,11 @@ def main(argv: list[str] | None = None) -> None:
         help='Only expose models whose "{provider}:{model_id}" contains this substring (case-insensitive). Repeatable; comma-separated also accepted.',
     )
     args = parser.parse_args(argv)
-    bearer = (
-        args.bearer_token or os.environ.get("NOUS_GENAI_MCP_BEARER_TOKEN") or ""
-    ).strip()
-    token_rules = (os.environ.get("NOUS_GENAI_MCP_TOKEN_RULES") or "").strip()
+    bearer = (args.bearer_token or get_prefixed_env("MCP_BEARER_TOKEN") or "").strip()
+    token_rules = (get_prefixed_env("MCP_TOKEN_RULES") or "").strip()
     if token_rules and bearer:
         raise SystemExit(
-            "set either NOUS_GENAI_MCP_BEARER_TOKEN/--bearer-token or NOUS_GENAI_MCP_TOKEN_RULES, not both"
+            f"set either {_MCP_BEARER_TOKEN_ENV}/--bearer-token or {_MCP_TOKEN_RULES_ENV}, not both"
         )
     token_scopes: dict[str, McpTokenScope] = {}
     if token_rules:
@@ -916,7 +911,7 @@ def main(argv: list[str] | None = None) -> None:
         except ValueError as e:
             raise SystemExit(str(e)) from e
         if not token_scopes:
-            raise SystemExit("invalid NOUS_GENAI_MCP_TOKEN_RULES: no tokens configured")
+            raise SystemExit(f"invalid {_MCP_TOKEN_RULES_ENV}: no tokens configured")
 
     server_host, server_port = _get_host_port()
     server = build_server(

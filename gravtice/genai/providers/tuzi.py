@@ -8,6 +8,7 @@ from dataclasses import dataclass, replace
 from typing import Any, Iterator
 from uuid import uuid4
 
+from .._internal.config import format_prefixed_env_names
 from .._internal.errors import (
     GenAIError,
     invalid_request_error,
@@ -386,7 +387,7 @@ class TuziAdapter:
     ) -> GenerateResponse:
         if self.openai is None:
             raise invalid_request_error(
-                "NOUS_GENAI_TUZI_OPENAI_API_KEY required for async chat video models"
+                f"{format_prefixed_env_names('TUZI_OPENAI_API_KEY', 'TUZI_OPENAI_API_KEY')} required for async chat video models"
             )
 
         api_model, suffix = _sora_api_model_and_prompt_suffix(model_id)
@@ -911,7 +912,7 @@ class TuziAdapter:
         """Handle deepsearch models via asyncdata.net async API."""
         if self.openai is None:
             raise invalid_request_error(
-                "NOUS_GENAI_TUZI_OPENAI_API_KEY required for deepsearch models"
+                f"{format_prefixed_env_names('TUZI_OPENAI_API_KEY', 'TUZI_OPENAI_API_KEY')} required for deepsearch models"
             )
 
         # Build chat completions body
@@ -1051,23 +1052,23 @@ class TuziAdapter:
         if mid_l.startswith("claude-"):
             if self.anthropic is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_TUZI_ANTHROPIC_API_KEY/TUZI_ANTHROPIC_API_KEY "
-                    "(or NOUS_GENAI_TUZI_WEB_API_KEY/TUZI_WEB_API_KEY) not configured"
+                    f"{format_prefixed_env_names('TUZI_ANTHROPIC_API_KEY', 'TUZI_ANTHROPIC_API_KEY')} "
+                    f"(or {format_prefixed_env_names('TUZI_WEB_API_KEY', 'TUZI_WEB_API_KEY')}) not configured"
                 )
             return self.anthropic
 
         if mid_l.startswith(("models/", "gemini-", "gemma-", "veo-")):
             if self.gemini is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_TUZI_GOOGLE_API_KEY/TUZI_GOOGLE_API_KEY "
-                    "(or NOUS_GENAI_TUZI_WEB_API_KEY/TUZI_WEB_API_KEY) not configured"
+                    f"{format_prefixed_env_names('TUZI_GOOGLE_API_KEY', 'TUZI_GOOGLE_API_KEY')} "
+                    f"(or {format_prefixed_env_names('TUZI_WEB_API_KEY', 'TUZI_WEB_API_KEY')}) not configured"
                 )
             return self.gemini
         if mid_l.startswith("veo2"):
             if self.gemini is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_TUZI_GOOGLE_API_KEY/TUZI_GOOGLE_API_KEY "
-                    "(or NOUS_GENAI_TUZI_WEB_API_KEY/TUZI_WEB_API_KEY) not configured"
+                    f"{format_prefixed_env_names('TUZI_GOOGLE_API_KEY', 'TUZI_GOOGLE_API_KEY')} "
+                    f"(or {format_prefixed_env_names('TUZI_WEB_API_KEY', 'TUZI_WEB_API_KEY')}) not configured"
                 )
             return self.gemini
 
@@ -1080,14 +1081,14 @@ class TuziAdapter:
         }:
             if self.gemini is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_TUZI_GOOGLE_API_KEY/TUZI_GOOGLE_API_KEY "
-                    "(or NOUS_GENAI_TUZI_WEB_API_KEY/TUZI_WEB_API_KEY) not configured"
+                    f"{format_prefixed_env_names('TUZI_GOOGLE_API_KEY', 'TUZI_GOOGLE_API_KEY')} "
+                    f"(or {format_prefixed_env_names('TUZI_WEB_API_KEY', 'TUZI_WEB_API_KEY')}) not configured"
                 )
             return self.gemini
 
         if self.openai is None:
             raise invalid_request_error(
-                "NOUS_GENAI_TUZI_OPENAI_API_KEY/TUZI_OPENAI_API_KEY "
-                "(or NOUS_GENAI_TUZI_WEB_API_KEY/TUZI_WEB_API_KEY) not configured"
+                f"{format_prefixed_env_names('TUZI_OPENAI_API_KEY', 'TUZI_OPENAI_API_KEY')} "
+                f"(or {format_prefixed_env_names('TUZI_WEB_API_KEY', 'TUZI_WEB_API_KEY')}) not configured"
             )
         return self.openai

@@ -13,7 +13,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from nous.genai import (  # noqa: E402
+from gravtice import (  # noqa: E402
     Client,
     GenAIError,
     GenerateParams,
@@ -25,7 +25,7 @@ from nous.genai import (  # noqa: E402
     OutputVideoSpec,
     Part,
 )
-from nous.genai.reference import (  # noqa: E402
+from gravtice.genai.reference import (  # noqa: E402
     get_sdk_supported_models_for_provider,
     get_supported_providers,
 )
@@ -196,7 +196,8 @@ def main(argv: list[str] | None = None) -> int:
         providers = [p for p in supported if _is_configured(client, p)]
     if not providers:
         raise SystemExit(
-            "no configured providers found (check .env.local and NOUS_GENAI_*_API_KEY)"
+            "no configured providers found "
+            "(check .env.local and GENAI_CALLING_*_API_KEY; legacy GENAI_CALLING_*_API_KEY is also supported)"
         )
 
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")

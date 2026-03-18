@@ -7,8 +7,8 @@ from unittest.mock import patch
 
 class TestAnthropicImageUrlDoesNotCrash(unittest.TestCase):
     def test_messages_body_passes_proxy_url_to_downloader(self) -> None:
-        from nous.genai.providers.anthropic import AnthropicAdapter
-        from nous.genai.types import (
+        from gravtice.genai.providers.anthropic import AnthropicAdapter
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -52,7 +52,7 @@ class TestAnthropicImageUrlDoesNotCrash(unittest.TestCase):
         )
         try:
             with patch(
-                "nous.genai.providers.anthropic.download_to_tempfile",
+                "gravtice.genai.providers.anthropic.download_to_tempfile",
                 side_effect=_fake_download_to_tempfile,
             ):
                 body = adapter._messages_body(req, stream=False)  # type: ignore[attr-defined]
@@ -66,8 +66,8 @@ class TestAnthropicImageUrlDoesNotCrash(unittest.TestCase):
 
 class TestUrlDownloadPrivateHostDnsBlocked(unittest.TestCase):
     def test_download_to_file_blocks_private_dns(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai._internal.http import download_to_file
+        from gravtice.genai import GenAIError
+        from gravtice.genai._internal.http import download_to_file
 
         def _fake_getaddrinfo(host: str, port: object, proto: int):  # type: ignore[no-untyped-def]
             self.assertEqual(host, "evil.example")
@@ -78,10 +78,10 @@ class TestUrlDownloadPrivateHostDnsBlocked(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="genaisdk-test-") as d:
             out_path = os.path.join(d, "out.bin")
             with patch.dict(
-                os.environ, {"NOUS_GENAI_ALLOW_PRIVATE_URLS": "0"}, clear=False
+                os.environ, {"GENAI_CALLING_ALLOW_PRIVATE_URLS": "0"}, clear=False
             ):
                 with patch(
-                    "nous.genai._internal.http.socket.getaddrinfo"
+                    "gravtice.genai._internal.http.socket.getaddrinfo"
                 ) as mock_getaddrinfo:
                     import socket
 
@@ -96,9 +96,9 @@ class TestUrlDownloadPrivateHostDnsBlocked(unittest.TestCase):
 
 class TestOpenAIProviderOptionsNoOverride(unittest.TestCase):
     def test_images_provider_options_cannot_override_prompt(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import GenerateRequest, Message, OutputSpec, Part
+        from gravtice.genai import GenAIError
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import GenerateRequest, Message, OutputSpec, Part
 
         adapter = OpenAIAdapter(api_key="__test__")
         req = GenerateRequest(
@@ -113,9 +113,9 @@ class TestOpenAIProviderOptionsNoOverride(unittest.TestCase):
         self.assertIn("cannot override body.prompt", cm.exception.info.message)
 
     def test_transcribe_provider_options_cannot_override_model(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import (
+        from gravtice.genai import GenAIError
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -149,9 +149,9 @@ class TestOpenAIProviderOptionsNoOverride(unittest.TestCase):
 
 class TestClientInputModalitiesValidated(unittest.TestCase):
     def test_client_rejects_unsupported_input_modality(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.client import Client
-        from nous.genai.types import (
+        from gravtice.genai import GenAIError
+        from gravtice.genai.client import Client
+        from gravtice.genai.types import (
             Capability,
             GenerateRequest,
             Message,
@@ -200,7 +200,7 @@ class TestClientInputModalitiesValidated(unittest.TestCase):
 
 class TestPartValidation(unittest.TestCase):
     def test_image_requires_source(self) -> None:
-        from nous.genai.types import Part
+        from gravtice.genai.types import Part
 
         with self.assertRaises(ValueError) as cm:
             Part(type="image", mime_type="image/png", source=None)
@@ -214,8 +214,8 @@ class TestMcpArtifactByteLimit(unittest.TestCase):
         except ModuleNotFoundError:
             self.skipTest("missing dependency: mcp")
 
-        from nous.genai.mcp_server import build_server
-        from nous.genai.types import (
+        from gravtice.genai.mcp_server import build_server
+        from gravtice.genai.types import (
             Capability,
             GenerateResponse,
             Message,
@@ -250,10 +250,10 @@ class TestMcpArtifactByteLimit(unittest.TestCase):
         with patch.dict(
             os.environ,
             {
-                "NOUS_GENAI_MAX_INLINE_BASE64_CHARS": "4",
-                "NOUS_GENAI_MAX_ARTIFACTS": "64",
-                "NOUS_GENAI_MAX_ARTIFACT_BYTES": "1024",
-                "NOUS_GENAI_MCP_PUBLIC_BASE_URL": "",
+                "GENAI_CALLING_MAX_INLINE_BASE64_CHARS": "4",
+                "GENAI_CALLING_MAX_ARTIFACTS": "64",
+                "GENAI_CALLING_MAX_ARTIFACT_BYTES": "1024",
+                "GENAI_CALLING_MCP_PUBLIC_BASE_URL": "",
             },
             clear=False,
         ):
@@ -270,7 +270,7 @@ class TestMcpArtifactByteLimit(unittest.TestCase):
                     "generate": lambda self, *_args, **_kwargs: resp,
                 },
             )()
-            with patch("nous.genai.client.Client._adapter", return_value=adapter):
+            with patch("gravtice.genai.client.Client._adapter", return_value=adapter):
                 server = build_server(host="127.0.0.1", port=7001)
                 out = server.call_tool("generate", {"request": req_dict})
                 if asyncio.iscoroutine(out):
@@ -289,8 +289,8 @@ class TestMcpArtifactByteLimit(unittest.TestCase):
         except ModuleNotFoundError:
             self.skipTest("missing dependency: mcp")
 
-        from nous.genai.mcp_server import build_server
-        from nous.genai.types import (
+        from gravtice.genai.mcp_server import build_server
+        from gravtice.genai.types import (
             Capability,
             GenerateResponse,
             Message,
@@ -325,9 +325,9 @@ class TestMcpArtifactByteLimit(unittest.TestCase):
         with patch.dict(
             os.environ,
             {
-                "NOUS_GENAI_MAX_INLINE_BASE64_CHARS": "4",
-                "NOUS_GENAI_MAX_ARTIFACTS": "64",
-                "NOUS_GENAI_MAX_ARTIFACT_BYTES": "3",
+                "GENAI_CALLING_MAX_INLINE_BASE64_CHARS": "4",
+                "GENAI_CALLING_MAX_ARTIFACTS": "64",
+                "GENAI_CALLING_MAX_ARTIFACT_BYTES": "3",
             },
             clear=False,
         ):
@@ -344,7 +344,7 @@ class TestMcpArtifactByteLimit(unittest.TestCase):
                     "generate": lambda self, *_args, **_kwargs: resp,
                 },
             )()
-            with patch("nous.genai.client.Client._adapter", return_value=adapter):
+            with patch("gravtice.genai.client.Client._adapter", return_value=adapter):
                 server = build_server(host="127.0.0.1", port=7001)
                 out = server.call_tool("generate", {"request": req_dict})
                 if asyncio.iscoroutine(out):

@@ -33,8 +33,8 @@ class _FakeConn:
 
 class TestHttpErrorMapping(unittest.TestCase):
     def test_request_json_maps_500_to_retryable_provider_error(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai._internal.http import request_json
+        from gravtice.genai import GenAIError
+        from gravtice.genai._internal.http import request_json
 
         resp = _FakeResponse(status=500, body=b'{"message":"oops"}')
 
@@ -44,7 +44,7 @@ class TestHttpErrorMapping(unittest.TestCase):
             return _FakeConn(resp)
 
         with patch(
-            "nous.genai._internal.http._make_connection",
+            "gravtice.genai._internal.http._make_connection",
             side_effect=_fake_make_connection,
         ):
             with self.assertRaises(GenAIError) as cm:
@@ -54,8 +54,8 @@ class TestHttpErrorMapping(unittest.TestCase):
         self.assertTrue(cm.exception.info.retryable)
 
     def test_request_json_maps_429_to_rate_limit_error(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai._internal.http import request_json
+        from gravtice.genai import GenAIError
+        from gravtice.genai._internal.http import request_json
 
         resp = _FakeResponse(status=429, body=b'{"message":"slow down"}')
 
@@ -65,7 +65,7 @@ class TestHttpErrorMapping(unittest.TestCase):
             return _FakeConn(resp)
 
         with patch(
-            "nous.genai._internal.http._make_connection",
+            "gravtice.genai._internal.http._make_connection",
             side_effect=_fake_make_connection,
         ):
             with self.assertRaises(GenAIError) as cm:
@@ -75,8 +75,8 @@ class TestHttpErrorMapping(unittest.TestCase):
         self.assertTrue(cm.exception.info.retryable)
 
     def test_request_json_maps_network_error_to_retryable_provider_error(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai._internal.http import request_json
+        from gravtice.genai import GenAIError
+        from gravtice.genai._internal.http import request_json
 
         class _NetErrConn:
             def request(
@@ -97,7 +97,7 @@ class TestHttpErrorMapping(unittest.TestCase):
             return _NetErrConn()
 
         with patch(
-            "nous.genai._internal.http._make_connection",
+            "gravtice.genai._internal.http._make_connection",
             side_effect=_fake_make_connection,
         ):
             with self.assertRaises(GenAIError) as cm:

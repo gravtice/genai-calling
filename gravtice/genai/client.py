@@ -7,7 +7,14 @@ import urllib.parse
 from dataclasses import replace
 from typing import Iterator, Literal, Protocol, overload
 
-from ._internal.config import get_default_timeout_ms, get_provider_keys, load_env_files
+from ._internal.config import (
+    format_prefixed_env_names,
+    get_default_timeout_ms,
+    get_prefixed_env,
+    get_prefixed_env_int,
+    get_provider_keys,
+    load_env_files,
+)
 from ._internal.errors import GenAIError, invalid_request_error, not_supported_error
 from ._internal.http import download_to_file as _download_to_file
 from ._internal.http import download_to_tempfile
@@ -49,7 +56,7 @@ class Client:
         artifact_store: _ArtifactStore | None = None,
     ) -> None:
         load_env_files()
-        self._transport = os.environ.get("NOUS_GENAI_TRANSPORT", "").strip().lower()
+        self._transport = (get_prefixed_env("TRANSPORT") or "").strip().lower()
         self._proxy_url = (
             proxy_url.strip()
             if isinstance(proxy_url, str) and proxy_url.strip()
@@ -332,7 +339,7 @@ class Client:
         if store is None:
             return resp
 
-        max_inline_b64_chars = _env_int("NOUS_GENAI_MAX_INLINE_BASE64_CHARS", 4096)
+        max_inline_b64_chars = get_prefixed_env_int("MAX_INLINE_BASE64_CHARS", 4096)
         if max_inline_b64_chars < 0:
             max_inline_b64_chars = 0
         if max_inline_b64_chars == 0:
@@ -340,7 +347,9 @@ class Client:
         else:
             threshold = max_inline_b64_chars
 
-        max_artifact_bytes = _env_int("NOUS_GENAI_MAX_ARTIFACT_BYTES", 64 * 1024 * 1024)
+        max_artifact_bytes = get_prefixed_env_int(
+            "MAX_ARTIFACT_BYTES", 64 * 1024 * 1024
+        )
         if max_artifact_bytes < 0:
             max_artifact_bytes = 0
         if max_artifact_bytes == 0:
@@ -412,7 +421,9 @@ class Client:
         if store is None:
             return resp
 
-        max_artifact_bytes = _env_int("NOUS_GENAI_MAX_ARTIFACT_BYTES", 64 * 1024 * 1024)
+        max_artifact_bytes = get_prefixed_env_int(
+            "MAX_ARTIFACT_BYTES", 64 * 1024 * 1024
+        )
         if max_artifact_bytes < 0:
             max_artifact_bytes = 0
         if max_artifact_bytes == 0:
@@ -597,55 +608,55 @@ class Client:
         if provider == "openai":
             if self._openai is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_OPENAI_API_KEY/OPENAI_API_KEY not configured"
+                    f"{format_prefixed_env_names('OPENAI_API_KEY', 'OPENAI_API_KEY')} not configured"
                 )
             return self._openai
         if provider == "google":
             if self._gemini is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_GOOGLE_API_KEY/GOOGLE_API_KEY not configured"
+                    f"{format_prefixed_env_names('GOOGLE_API_KEY', 'GOOGLE_API_KEY')} not configured"
                 )
             return self._gemini
         if provider == "anthropic":
             if self._anthropic is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_ANTHROPIC_API_KEY/ANTHROPIC_API_KEY not configured"
+                    f"{format_prefixed_env_names('ANTHROPIC_API_KEY', 'ANTHROPIC_API_KEY')} not configured"
                 )
             return self._anthropic
         if provider == "aliyun":
             if self._aliyun is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_ALIYUN_API_KEY/ALIYUN_API_KEY not configured"
+                    f"{format_prefixed_env_names('ALIYUN_API_KEY', 'ALIYUN_API_KEY')} not configured"
                 )
             return self._aliyun
         if provider == "volcengine":
             if self._volcengine is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_VOLCENGINE_API_KEY/VOLCENGINE_API_KEY not configured"
+                    f"{format_prefixed_env_names('VOLCENGINE_API_KEY', 'VOLCENGINE_API_KEY')} not configured"
                 )
             return self._volcengine
         if provider == "tuzi-web":
             if self._tuzi_web is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_TUZI_WEB_API_KEY/TUZI_WEB_API_KEY not configured"
+                    f"{format_prefixed_env_names('TUZI_WEB_API_KEY', 'TUZI_WEB_API_KEY')} not configured"
                 )
             return self._tuzi_web
         if provider == "tuzi-openai":
             if self._tuzi_openai is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_TUZI_OPENAI_API_KEY/TUZI_OPENAI_API_KEY not configured"
+                    f"{format_prefixed_env_names('TUZI_OPENAI_API_KEY', 'TUZI_OPENAI_API_KEY')} not configured"
                 )
             return self._tuzi_openai
         if provider == "tuzi-google":
             if self._tuzi_google is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_TUZI_GOOGLE_API_KEY/TUZI_GOOGLE_API_KEY not configured"
+                    f"{format_prefixed_env_names('TUZI_GOOGLE_API_KEY', 'TUZI_GOOGLE_API_KEY')} not configured"
                 )
             return self._tuzi_google
         if provider == "tuzi-anthropic":
             if self._tuzi_anthropic is None:
                 raise invalid_request_error(
-                    "NOUS_GENAI_TUZI_ANTHROPIC_API_KEY/TUZI_ANTHROPIC_API_KEY not configured"
+                    f"{format_prefixed_env_names('TUZI_ANTHROPIC_API_KEY', 'TUZI_ANTHROPIC_API_KEY')} not configured"
                 )
             return self._tuzi_anthropic
         raise invalid_request_error(f"unknown provider: {provider}")
@@ -665,17 +676,6 @@ def _split_model(model: str) -> tuple[str, str]:
         raise invalid_request_error('model must be "{provider}:{model_id}"')
     provider, model_id = model.split(":", 1)
     return provider, model_id
-
-
-def _env_int(name: str, default: int) -> int:
-    raw = os.environ.get(name)
-    if raw is None:
-        return default
-    try:
-        value = int(raw)
-    except ValueError:
-        return default
-    return value
 
 
 def _is_mcp_transport_marker(value: str) -> bool:

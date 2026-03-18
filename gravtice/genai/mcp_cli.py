@@ -3,41 +3,26 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-import os
 import sys
 from pathlib import Path
 from typing import Any
 
-from ._internal.config import load_env_files
-
-
-def _env(name: str) -> str | None:
-    return os.environ.get(name)
-
-
-def _env_int(name: str, default: int) -> int:
-    raw = _env(name)
-    if raw is None:
-        return default
-    try:
-        return int(raw)
-    except ValueError:
-        return default
+from ._internal.config import get_prefixed_env, get_prefixed_env_int, load_env_files
 
 
 def _mcp_url() -> str:
-    base = (_env("NOUS_GENAI_MCP_URL") or "").strip()
+    base = (get_prefixed_env("MCP_URL") or "").strip()
     if base:
         return _ensure_mcp_path(base)
 
-    base = (_env("NOUS_GENAI_MCP_BASE_URL") or "").strip()
+    base = (get_prefixed_env("MCP_BASE_URL") or "").strip()
     if not base:
-        base = (_env("NOUS_GENAI_MCP_PUBLIC_BASE_URL") or "").strip()
+        base = (get_prefixed_env("MCP_PUBLIC_BASE_URL") or "").strip()
     if base:
         return _ensure_mcp_path(base)
 
-    host = (_env("NOUS_GENAI_MCP_HOST") or "").strip() or "127.0.0.1"
-    port = _env_int("NOUS_GENAI_MCP_PORT", 6001)
+    host = (get_prefixed_env("MCP_HOST") or "").strip() or "127.0.0.1"
+    port = get_prefixed_env_int("MCP_PORT", 6001)
     if host in {"0.0.0.0", "::"}:
         host = "127.0.0.1"
     return f"http://{host}:{port}/mcp"
@@ -78,7 +63,7 @@ def _summarize_schema(schema: dict[str, Any] | None) -> str:
 async def _run(args: argparse.Namespace) -> int:
     loaded_envs = load_env_files()
     url = _mcp_url()
-    bearer = (args.bearer_token or _env("NOUS_GENAI_MCP_BEARER_TOKEN") or "").strip()
+    bearer = (args.bearer_token or get_prefixed_env("MCP_BEARER_TOKEN") or "").strip()
 
     from mcp import ClientSession
     from mcp.client.streamable_http import streamable_http_client
@@ -212,12 +197,12 @@ async def _run(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="genai-mcp-cli",
-        description="MCP client for debugging nous-genai MCP server (Streamable HTTP)",
+        description="MCP client for debugging genai-calling MCP server (Streamable HTTP)",
     )
     parser.add_argument(
         "--bearer-token",
         dest="bearer_token",
-        help="HTTP Authorization Bearer token (or set NOUS_GENAI_MCP_BEARER_TOKEN).",
+        help="HTTP Authorization Bearer token (or set GENAI_CALLING_MCP_BEARER_TOKEN).",
     )
     sub = parser.add_subparsers(dest="cmd")
 

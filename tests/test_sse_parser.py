@@ -16,7 +16,7 @@ class _FakeSseResponse:
 
 class TestSseParser(unittest.TestCase):
     def test_parses_event_id_retry_and_multiline_data(self) -> None:
-        from nous.genai._internal.http import SSEEvent, _iter_sse_events
+        from gravtice.genai._internal.http import SSEEvent, _iter_sse_events
 
         resp = _FakeSseResponse(
             [
@@ -43,7 +43,7 @@ class TestSseParser(unittest.TestCase):
         )
 
     def test_id_with_null_is_ignored(self) -> None:
-        from nous.genai._internal.http import SSEEvent, _iter_sse_events
+        from gravtice.genai._internal.http import SSEEvent, _iter_sse_events
 
         resp = _FakeSseResponse(
             [
@@ -56,7 +56,7 @@ class TestSseParser(unittest.TestCase):
         self.assertEqual(events, [SSEEvent(data="{}", event=None, id=None, retry=None)])
 
     def test_event_without_data_is_emitted_with_empty_data(self) -> None:
-        from nous.genai._internal.http import SSEEvent, _iter_sse_events
+        from gravtice.genai._internal.http import SSEEvent, _iter_sse_events
 
         resp = _FakeSseResponse(
             [

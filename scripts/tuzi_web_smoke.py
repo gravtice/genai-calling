@@ -12,7 +12,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from nous.genai import (  # noqa: E402
+from gravtice import (  # noqa: E402
     Client,
     GenAIError,
     GenerateParams,
@@ -233,10 +233,11 @@ def main() -> int:
     client = Client()
     if getattr(client, "_tuzi_web", None) is None:
         raise SystemExit(
-            "TUZI_WEB_API_KEY not configured (NOUS_GENAI_TUZI_WEB_API_KEY/TUZI_WEB_API_KEY)"
+            "TUZI_WEB_API_KEY not configured "
+            "(GENAI_CALLING_TUZI_WEB_API_KEY/GENAI_CALLING_TUZI_WEB_API_KEY/TUZI_WEB_API_KEY)"
         )
 
-    from nous.genai.reference import get_model_catalog
+    from gravtice.genai.reference import get_model_catalog
 
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     out_dir = Path("build")

@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 class TestClientTimeout(unittest.TestCase):
     def test_generate_passes_request_timeout_ms(self) -> None:
-        from nous.genai.client import Client
-        from nous.genai.types import (
+        from gravtice.genai.client import Client
+        from gravtice.genai.types import (
             Capability,
             GenerateParams,
             GenerateRequest,
@@ -53,8 +53,8 @@ class TestClientTimeout(unittest.TestCase):
         self.assertEqual(adapter.last_timeout_ms, 999)
 
     def test_generate_defaults_timeout_ms_from_env(self) -> None:
-        from nous.genai.client import Client
-        from nous.genai.types import (
+        from gravtice.genai.client import Client
+        from gravtice.genai.types import (
             Capability,
             GenerateRequest,
             GenerateResponse,
@@ -85,7 +85,7 @@ class TestClientTimeout(unittest.TestCase):
                     output=[Message(role="assistant", content=[Part.from_text("ok")])],
                 )
 
-        with patch.dict(os.environ, {"NOUS_GENAI_TIMEOUT_MS": "12345"}, clear=False):
+        with patch.dict(os.environ, {"GENAI_CALLING_TIMEOUT_MS": "12345"}, clear=False):
             client = Client()
             adapter = DummyAdapter()
             req = GenerateRequest(
@@ -99,8 +99,8 @@ class TestClientTimeout(unittest.TestCase):
         self.assertEqual(adapter.last_timeout_ms, 12345)
 
     def test_generate_stream_passes_request_timeout_ms(self) -> None:
-        from nous.genai.client import Client
-        from nous.genai.types import (
+        from gravtice.genai.client import Client
+        from gravtice.genai.types import (
             Capability,
             GenerateEvent,
             GenerateParams,

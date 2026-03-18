@@ -18,8 +18,8 @@ class TestMcpArtifactEviction(unittest.TestCase):
         except ModuleNotFoundError:
             self.skipTest("missing dependency: starlette")
 
-        from nous.genai.mcp_server import build_server
-        from nous.genai.types import (
+        from gravtice.genai.mcp_server import build_server
+        from gravtice.genai.types import (
             Capability,
             GenerateResponse,
             Message,
@@ -57,9 +57,9 @@ class TestMcpArtifactEviction(unittest.TestCase):
         with patch.dict(
             os.environ,
             {
-                "NOUS_GENAI_MAX_INLINE_BASE64_CHARS": "1",
-                "NOUS_GENAI_MAX_ARTIFACTS": "1",
-                "NOUS_GENAI_MAX_ARTIFACT_BYTES": "1024",
+                "GENAI_CALLING_MAX_INLINE_BASE64_CHARS": "1",
+                "GENAI_CALLING_MAX_ARTIFACTS": "1",
+                "GENAI_CALLING_MAX_ARTIFACT_BYTES": "1024",
             },
             clear=False,
         ):
@@ -76,7 +76,7 @@ class TestMcpArtifactEviction(unittest.TestCase):
                     "generate": lambda self, *_args, **_kwargs: resp,
                 },
             )()
-            with patch("nous.genai.client.Client._adapter", return_value=adapter):
+            with patch("gravtice.genai.client.Client._adapter", return_value=adapter):
                 server = build_server(host="127.0.0.1", port=7001)
 
                 out1 = server.call_tool("generate", {"request": req_dict})
@@ -126,8 +126,8 @@ class TestMcpArtifactEviction(unittest.TestCase):
         except ModuleNotFoundError:
             self.skipTest("missing dependency: starlette")
 
-        from nous.genai.mcp_server import _BearerAuthMiddleware, build_server
-        from nous.genai.types import (
+        from gravtice.genai.mcp_server import _BearerAuthMiddleware, build_server
+        from gravtice.genai.types import (
             Capability,
             GenerateResponse,
             Message,
@@ -166,10 +166,10 @@ class TestMcpArtifactEviction(unittest.TestCase):
         with patch.dict(
             os.environ,
             {
-                "NOUS_GENAI_MAX_INLINE_BASE64_CHARS": "1",
-                "NOUS_GENAI_MAX_ARTIFACTS": "4",
-                "NOUS_GENAI_MAX_ARTIFACT_BYTES": "1024",
-                "NOUS_GENAI_ARTIFACT_URL_TTL_SECONDS": "600",
+                "GENAI_CALLING_MAX_INLINE_BASE64_CHARS": "1",
+                "GENAI_CALLING_MAX_ARTIFACTS": "4",
+                "GENAI_CALLING_MAX_ARTIFACT_BYTES": "1024",
+                "GENAI_CALLING_ARTIFACT_URL_TTL_SECONDS": "600",
             },
             clear=False,
         ):
@@ -186,7 +186,7 @@ class TestMcpArtifactEviction(unittest.TestCase):
                     "generate": lambda self, *_args, **_kwargs: resp,
                 },
             )()
-            with patch("nous.genai.client.Client._adapter", return_value=adapter):
+            with patch("gravtice.genai.client.Client._adapter", return_value=adapter):
                 server = build_server(host="127.0.0.1", port=7001, bearer_token=bearer)
                 out = server.call_tool("generate", {"request": req_dict})
                 if asyncio.iscoroutine(out):

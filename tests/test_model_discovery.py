@@ -4,13 +4,13 @@ from unittest.mock import patch
 
 class TestModelDiscovery(unittest.TestCase):
     def test_client_does_not_expose_list_models_alias(self) -> None:
-        from nous.genai.client import Client
+        from gravtice.genai.client import Client
 
         self.assertFalse(hasattr(Client, "list_models"))
 
     def test_get_sdk_supported_models_for_provider_matches_catalog(self) -> None:
-        from nous.genai.reference.catalog import MODEL_CATALOG
-        from nous.genai.reference import get_sdk_supported_models_for_provider
+        from gravtice.genai.reference.catalog import MODEL_CATALOG
+        from gravtice.genai.reference import get_sdk_supported_models_for_provider
 
         expected = set(MODEL_CATALOG["openai"])
 
@@ -19,8 +19,8 @@ class TestModelDiscovery(unittest.TestCase):
         self.assertEqual(got, expected)
 
     def test_list_available_models_is_intersection(self) -> None:
-        from nous.genai.reference.catalog import MODEL_CATALOG
-        from nous.genai.client import Client
+        from gravtice.genai.reference.catalog import MODEL_CATALOG
+        from gravtice.genai.client import Client
 
         supported = MODEL_CATALOG["openai"][0]
         client = Client()
@@ -30,8 +30,8 @@ class TestModelDiscovery(unittest.TestCase):
             self.assertEqual(client.list_available_models("openai"), [supported])
 
     def test_list_unsupported_models_is_difference(self) -> None:
-        from nous.genai.reference.catalog import MODEL_CATALOG
-        from nous.genai.client import Client
+        from gravtice.genai.reference.catalog import MODEL_CATALOG
+        from gravtice.genai.client import Client
 
         supported = MODEL_CATALOG["openai"][0]
         client = Client()
@@ -41,8 +41,8 @@ class TestModelDiscovery(unittest.TestCase):
             self.assertEqual(client.list_unsupported_models("openai"), ["__unknown__"])
 
     def test_list_stale_models_is_difference(self) -> None:
-        from nous.genai.reference.catalog import MODEL_CATALOG
-        from nous.genai.client import Client
+        from gravtice.genai.reference.catalog import MODEL_CATALOG
+        from gravtice.genai.client import Client
 
         supported_set = set(MODEL_CATALOG["openai"])
         supported = sorted(supported_set)
@@ -54,11 +54,11 @@ class TestModelDiscovery(unittest.TestCase):
             self.assertEqual(client.list_stale_models("openai"), [missing])
 
     def test_list_all_available_models_is_qualified_and_sorted(self) -> None:
-        from nous.genai.client import Client
+        from gravtice.genai.client import Client
 
         client = Client()
         with patch(
-            "nous.genai.reference.get_supported_providers", return_value=["b", "a"]
+            "gravtice.genai.reference.get_supported_providers", return_value=["b", "a"]
         ):
             calls: list[tuple[str, int | None]] = []
 

@@ -25,10 +25,10 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --group dev
 
       - name: Run tests
-        run: uv run pytest tests/ -v --tb=short
+        run: uv run python -m pytest tests/ -v --tb=short
 
   lint:
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
         run: uv python install 3.10
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --group dev
 
       - name: Run ruff check
         run: uv run ruff check .
@@ -68,7 +68,7 @@ jobs:
         run: uv python install 3.10
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --group dev
 
       - name: Run mypy
-        run: uv run mypy nous/ --no-error-summary
+        run: uv run python -m mypy gravtice/ --no-error-summary

@@ -3,6 +3,7 @@ from ._internal.errors import ErrorInfo, GenAIError
 from .client import Client
 from .types import (
     Capability,
+    detect_mime_type,
     GenerateEvent,
     GenerateParams,
     GenerateRequest,
@@ -29,6 +30,7 @@ from .types import (
 __all__ = [
     "Capability",
     "Client",
+    "detect_mime_type",
     "ErrorInfo",
     "GenerateEvent",
     "GenerateParams",

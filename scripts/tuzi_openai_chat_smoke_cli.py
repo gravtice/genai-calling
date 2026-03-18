@@ -12,9 +12,9 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from nous.genai import Client  # noqa: E402
-from nous.genai.cli import main as genai_main  # noqa: E402
-from nous.genai.reference import get_sdk_supported_models_for_provider  # noqa: E402
+from gravtice import Client  # noqa: E402
+from gravtice.genai.cli import main as genai_main  # noqa: E402
+from gravtice.genai.reference import get_sdk_supported_models_for_provider  # noqa: E402
 
 _PROMPT = "Only reply: OK"
 
@@ -34,7 +34,8 @@ def main() -> int:
     client = Client()
     if getattr(client, "_tuzi_openai", None) is None:
         raise SystemExit(
-            "TUZI_OPENAI_API_KEY not configured (NOUS_GENAI_TUZI_OPENAI_API_KEY/TUZI_OPENAI_API_KEY)"
+            "TUZI_OPENAI_API_KEY not configured "
+            "(GENAI_CALLING_TUZI_OPENAI_API_KEY/GENAI_CALLING_TUZI_OPENAI_API_KEY/TUZI_OPENAI_API_KEY)"
         )
 
     rows = get_sdk_supported_models_for_provider("tuzi-openai")

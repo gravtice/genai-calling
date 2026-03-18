@@ -11,8 +11,8 @@ class TestOutputTextJsonSchema(unittest.TestCase):
         except ModuleNotFoundError:
             self.skipTest("missing dependency: pydantic")
 
-        from nous.genai.client import Client
-        from nous.genai.types import (
+        from gravtice.genai.client import Client
+        from gravtice.genai.types import (
             Capability,
             GenerateRequest,
             GenerateResponse,
@@ -88,8 +88,8 @@ class TestOutputTextJsonSchema(unittest.TestCase):
         except ModuleNotFoundError:
             self.skipTest("missing dependency: pydantic")
 
-        from nous.genai.providers.gemini import GeminiAdapter
-        from nous.genai.types import (
+        from gravtice.genai.providers.gemini import GeminiAdapter
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
@@ -143,10 +143,10 @@ class TestOutputTextJsonSchema(unittest.TestCase):
         self.assertEqual(b_schema.get("nullable"), True)
 
     def test_rejects_gemini_schema_dict_in_json_schema(self) -> None:
-        from nous.genai._internal.errors import GenAIError
-        from nous.genai.client import Client
-        from nous.genai.providers.gemini import GeminiAdapter
-        from nous.genai.types import (
+        from gravtice.genai._internal.errors import GenAIError
+        from gravtice.genai.client import Client
+        from gravtice.genai.providers.gemini import GeminiAdapter
+        from gravtice.genai.types import (
             Capability,
             GenerateRequest,
             Message,

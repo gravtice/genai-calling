@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Iterator
 from uuid import uuid4
 
-from .config import get_default_timeout_ms, get_prefixed_env
+from .config import format_prefixed_env_names, get_default_timeout_ms, get_prefixed_env
 from .errors import (
     auth_error,
     invalid_request_error,
@@ -32,7 +32,8 @@ def _timeout_seconds(timeout_ms: int | None) -> float:
 
 
 def _env_truthy(name: str) -> bool:
-    return os.environ.get(name) in {"1", "true", "TRUE", "yes", "YES"}
+    value = get_prefixed_env(name)
+    return value in {"1", "true", "TRUE", "yes", "YES"}
 
 
 def _default_url_download_max_bytes() -> int:
@@ -133,7 +134,7 @@ def download_to_file(
     """
     Download URL to a local file with timeout/proxy support and a hard size limit.
 
-    Security: by default rejects obvious private/loopback IP hosts unless `NOUS_GENAI_ALLOW_PRIVATE_URLS=1`.
+    Security: by default rejects obvious private/loopback IP hosts unless `GENAI_CALLING_ALLOW_PRIVATE_URLS=1`.
     """
     effective_max = (
         _default_url_download_max_bytes() if max_bytes is None else max_bytes
@@ -152,9 +153,9 @@ def download_to_file(
         if initial_host is None:
             initial_host = parsed.hostname
         resolved, is_private = _resolve_url_host_ips(parsed.hostname)
-        if is_private and not _env_truthy("NOUS_GENAI_ALLOW_PRIVATE_URLS"):
+        if is_private and not _env_truthy("ALLOW_PRIVATE_URLS"):
             raise invalid_request_error(
-                "url host is private/loopback; set NOUS_GENAI_ALLOW_PRIVATE_URLS=1 to allow"
+                f"url host is private/loopback; set {format_prefixed_env_names('ALLOW_PRIVATE_URLS')}=1 to allow"
             )
         if not resolved:
             raise provider_error(
@@ -209,7 +210,7 @@ def download_to_file(
                     n = -1
                 if n > effective_max:
                     raise not_supported_error(
-                        f"url download too large ({n} > {effective_max}); set NOUS_GENAI_URL_DOWNLOAD_MAX_BYTES or use path/ref"
+                        f"url download too large ({n} > {effective_max}); set {format_prefixed_env_names('URL_DOWNLOAD_MAX_BYTES')} or use path/ref"
                     )
 
             out_dir = os.path.dirname(os.path.abspath(output_path)) or "."
@@ -227,7 +228,7 @@ def download_to_file(
                         total += len(chunk)
                         if total > effective_max:
                             raise not_supported_error(
-                                f"url download exceeded limit ({total} > {effective_max}); set NOUS_GENAI_URL_DOWNLOAD_MAX_BYTES or use path/ref"
+                                f"url download exceeded limit ({total} > {effective_max}); set {format_prefixed_env_names('URL_DOWNLOAD_MAX_BYTES')} or use path/ref"
                             )
                         f.write(chunk)
             except Exception:

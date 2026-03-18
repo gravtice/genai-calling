@@ -16,7 +16,7 @@ def _call_tool(server, name: str, args: dict) -> dict:
 
 class TestMcpTokenRules(unittest.TestCase):
     def test_parse_bracket_rules_supports_models_and_providers(self) -> None:
-        from nous.genai.mcp_server import _parse_mcp_token_scopes
+        from gravtice.genai.mcp_server import _parse_mcp_token_scopes
 
         scopes = _parse_mcp_token_scopes(
             "t1: [openai google openai:gpt-4o-mini]; t2: [openai:gpt-4o-mini]"
@@ -41,12 +41,12 @@ class TestMcpTokenRules(unittest.TestCase):
         except ModuleNotFoundError:
             self.skipTest("missing dependency: mcp")
 
-        from nous.genai.mcp_server import (
+        from gravtice.genai.mcp_server import (
             _REQUEST_TOKEN,
             _parse_mcp_token_scopes,
             build_server,
         )
-        from nous.genai.types import GenerateResponse, Message, Part
+        from gravtice.genai.types import GenerateResponse, Message, Part
         from mcp.server.fastmcp.exceptions import ToolError
 
         scopes = _parse_mcp_token_scopes(
@@ -102,25 +102,28 @@ class TestMcpTokenRules(unittest.TestCase):
         )
 
         with patch(
-            "nous.genai.reference.get_model_catalog",
+            "gravtice.genai.reference.get_model_catalog",
             return_value={"openai": [], "google": []},
         ):
             with patch(
-                "nous.genai.reference.get_supported_providers",
+                "gravtice.genai.reference.get_supported_providers",
                 return_value=["openai", "google"],
             ):
                 with patch(
-                    "nous.genai.reference.get_sdk_supported_models_for_provider",
+                    "gravtice.genai.reference.get_sdk_supported_models_for_provider",
                     side_effect=fake_supported_for_provider,
                 ):
-                    with patch("nous.genai.client.Client._adapter", new=fake_adapter):
+                    with patch(
+                        "gravtice.genai.client.Client._adapter", new=fake_adapter
+                    ):
                         with patch(
-                            "nous.genai.client.Client.list_available_models",
+                            "gravtice.genai.client.Client.list_available_models",
                             autospec=True,
                             side_effect=fake_list_available_models,
                         ) as list_mock:
                             with patch(
-                                "nous.genai.client.Client.generate", return_value=resp
+                                "gravtice.genai.client.Client.generate",
+                                return_value=resp,
                             ) as gen_mock:
                                 server = build_server(
                                     host="127.0.0.1", port=7001, token_scopes=scopes

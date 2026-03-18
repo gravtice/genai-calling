@@ -1,6 +1,6 @@
-# nous-genai
+# genai-calling
 
-![CI](https://github.com/gravtice/nous-genai/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/gravtice/genai-calling/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-≥3.10-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -22,29 +22,37 @@ One interface for calling multimodal models; four ways to use: Skill, MCP, CLI, 
 ## Installation
 
 ```bash
-pip install nous-genai
+pip install gravtice-genai-calling
 ```
+
+Python import package is `gravtice`.
 
 For development:
 
 ```bash
 pip install -e .
 # or (recommended)
-uv sync
+uv sync --group dev
 ```
 
 ## Skill (External Repository)
 
-The `nous-genai` skill is no longer bundled in this repository.
+The standalone skill is no longer bundled in this repository.
 
-Install it with:
+Preferred install name:
+
+```bash
+npx skills add gravtice/nous-skills -s genai-calling
+```
+
+Legacy catalogs may still expose the old entry name:
 
 ```bash
 npx skills add gravtice/nous-skills -s nous-genai
 ```
 
-If you want to inspect the skill source code:
-https://github.com/gravtice/nous-skills/tree/main/skills/nous-genai
+Skill repository:
+https://github.com/gravtice/nous-skills
 
 ## Configuration (Env Vars, Zero-parameter)
 
@@ -53,27 +61,27 @@ Configuration is managed via environment variables.
 You can set env vars in two ways:
 
 1. Runtime env vars (inline or exported in shell)
-2. Env files (`.env.local`, `.env.production`, `.env.development`, `.env.test`) and the global fallback `~/.nous/.env`
+2. Env files (`.env.local`, `.env.production`, `.env.development`, `.env.test`) and the global fallback `~/.genai-calling/.env`
 
 Runtime example (inline):
 
 ```bash
-NOUS_GENAI_OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "Hello"
+GENAI_CALLING_OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "Hello"
 ```
 
 When env files are used, SDK/CLI/MCP loads them automatically with priority (high -> low):
 
-`.env.local > .env.production > .env.development > .env.test > ~/.nous/.env`
+`.env.local > .env.production > .env.development > .env.test > ~/.genai-calling/.env`
 
 Process env vars override both project and global env files (the loader uses `os.environ.setdefault()`).
 
-Use `~/.nous/.env` for user-wide shared defaults such as API keys. Keep worktree-specific settings such as ports in project-local `.env.local`.
+Use `~/.genai-calling/.env` for user-wide shared defaults such as API keys. Keep worktree-specific settings such as ports in project-local `.env.local`.
 
 Minimal `.env.local` (OpenAI only):
 
 ```bash
-NOUS_GENAI_OPENAI_API_KEY=...
-NOUS_GENAI_TIMEOUT_MS=120000
+GENAI_CALLING_OPENAI_API_KEY=...
+GENAI_CALLING_TIMEOUT_MS=120000
 ```
 
 See `docs/CONFIGURATION.md` for all options, or copy `.env.example` to `.env.local`.
@@ -99,7 +107,7 @@ uv run genai --model openai:gpt-image-1 --prompt "A red cube on white background
 uv run genai --model openai:whisper-1 --audio-path ./examples/demo_tts.mp3
 
 # Text-to-speech (text -> audio file)
-uv run genai --model openai:tts-1 --prompt "Hello from nous genai" --output-path ./out.mp3
+uv run genai --model openai:tts-1 --prompt "Hello from genai-calling" --output-path ./out.mp3
 
 # Video generation (text -> video; async style)
 uv run genai --model openai:sora-2 --prompt "A paper boat sailing on a rain puddle, cinematic" --no-wait
@@ -110,7 +118,7 @@ uv run genai --model openai:sora-2 --job-id "<job_id>" --output-path ./out.mp4 -
 ### SDK: Text generation
 
 ```python
-from nous.genai import Client, GenerateRequest, Message, OutputSpec, Part
+from gravtice import Client, GenerateRequest, Message, OutputSpec, Part
 
 client = Client()
 resp = client.generate(
@@ -127,7 +135,7 @@ print(resp.output[0].content[0].text)
 
 ```python
 import sys
-from nous.genai import Client, GenerateRequest, Message, OutputSpec, Part
+from gravtice import Client, GenerateRequest, Message, OutputSpec, Part
 
 client = Client()
 req = GenerateRequest(
@@ -145,8 +153,8 @@ print()
 ### SDK: Image understanding
 
 ```python
-from nous.genai import Client, GenerateRequest, Message, OutputSpec, Part, PartSourcePath
-from nous.genai.types import detect_mime_type
+from gravtice import Client, GenerateRequest, Message, OutputSpec, Part, PartSourcePath
+from gravtice import detect_mime_type
 
 path = "./cat.png"
 mime = detect_mime_type(path) or "application/octet-stream"
@@ -173,7 +181,7 @@ print(resp.output[0].content[0].text)
 ### SDK: List available models
 
 ```python
-from nous.genai import Client
+from gravtice import Client
 
 client = Client()
 print(client.list_all_available_models())
@@ -218,16 +226,16 @@ uv run genai-mcp-cli tools                 # Debug CLI
 
 ## Security
 
-- **SSRF protection**: rejects private/loopback URLs by default (`NOUS_GENAI_ALLOW_PRIVATE_URLS=1` to allow)
+- **SSRF protection**: rejects private/loopback URLs by default (`GENAI_CALLING_ALLOW_PRIVATE_URLS=1` to allow)
 - **DNS pinning**: mitigates DNS rebinding
-- **Download limit**: 128MiB per URL by default (`NOUS_GENAI_URL_DOWNLOAD_MAX_BYTES`)
+- **Download limit**: 128MiB per URL by default (`GENAI_CALLING_URL_DOWNLOAD_MAX_BYTES`)
 - **Bearer token auth**: for MCP server
 - **Token rules**: fine-grained access control
 
 ## Testing
 
 ```bash
-uv run pytest tests/ -v
+uv run python -m pytest tests/ -v
 ```
 
 ## Docs

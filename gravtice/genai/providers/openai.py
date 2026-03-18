@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Any, Iterator
 from uuid import uuid4
 
+from .._internal.config import get_prefixed_env
 from .._internal.capability_rules import (
     chat_input_modalities,
     chat_output_modalities,
@@ -61,7 +62,7 @@ _INLINE_BYTES_LIMIT = 20 * 1024 * 1024
 
 
 def _is_mcp_transport() -> bool:
-    value = os.environ.get("NOUS_GENAI_TRANSPORT", "").strip().lower()
+    value = (get_prefixed_env("TRANSPORT") or "").strip().lower()
     return value in {"mcp", "sse", "streamable", "streamable-http", "streamable_http"}
 
 

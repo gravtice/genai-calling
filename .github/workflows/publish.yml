@@ -43,14 +43,14 @@ jobs:
           PY
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --group dev
 
       - name: Run quality gates
         run: |
           uv run ruff check .
           uv run ruff format --check .
-          uv run mypy nous/ --no-error-summary
-          uv run pytest tests/ -q
+          uv run python -m mypy gravtice/ --no-error-summary
+          uv run python -m pytest tests/ -q
 
       - name: Build
         run: uv build --sdist --wheel

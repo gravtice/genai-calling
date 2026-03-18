@@ -12,6 +12,7 @@ from collections.abc import Callable
 from dataclasses import replace
 from typing import TypeVar
 
+from ._internal.config import format_prefixed_env_names
 from .client import Client
 from ._internal.errors import GenAIError
 from ._internal.http import download_to_file
@@ -39,7 +40,7 @@ from .types import (
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        prog="genai", description="nous-genai CLI (minimal)"
+        prog="genai", description="genai-calling CLI (minimal)"
     )
     sub = parser.add_subparsers(dest="command")
 
@@ -121,7 +122,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--timeout-ms",
         type=int,
-        help="Timeout budget in milliseconds (overrides NOUS_GENAI_TIMEOUT_MS)",
+        help="Timeout budget in milliseconds (overrides GENAI_CALLING_TIMEOUT_MS)",
     )
 
     probe = sub.add_parser("probe", help="Probe model modalities/modes for a provider")
@@ -137,7 +138,7 @@ def main(argv: list[str] | None = None) -> None:
     probe.add_argument(
         "--timeout-ms",
         type=int,
-        help="Timeout budget in milliseconds (overrides NOUS_GENAI_TIMEOUT_MS)",
+        help="Timeout budget in milliseconds (overrides GENAI_CALLING_TIMEOUT_MS)",
     )
 
     args = parser.parse_args(argv)
@@ -1155,7 +1156,9 @@ def _apply_protocol_override(
     if provider != "openai":
         raise SystemExit("--protocol only applies to provider=openai")
     if client._openai is None:
-        raise SystemExit("NOUS_GENAI_OPENAI_API_KEY/OPENAI_API_KEY not configured")
+        raise SystemExit(
+            f"{format_prefixed_env_names('OPENAI_API_KEY', 'OPENAI_API_KEY')} not configured"
+        )
     client._openai = replace(client._openai, chat_api=protocol)
 
 

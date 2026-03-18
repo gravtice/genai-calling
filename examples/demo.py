@@ -1,5 +1,5 @@
 """
-nous-genai demo CLI (preset inputs, zero-parameter).
+genai-calling demo CLI (preset inputs, zero-parameter).
 
 Usage:
   uv run examples/demo.py image --model tuzi-openai:dall-e-3
@@ -22,7 +22,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable
 
-from nous.genai import (
+from gravtice import (
     Client,
     GenAIError,
     GenerateRequest,
@@ -38,8 +38,8 @@ from nous.genai import (
     PartSourceRef,
     PartSourceUrl,
 )
-from nous.genai.tools import parse_output
-from nous.genai.types import detect_mime_type
+from gravtice.genai.tools import parse_output
+from gravtice import detect_mime_type
 
 
 _DEMO_DIR = Path(__file__).resolve().parent
@@ -275,7 +275,7 @@ def _cmd_embed(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="nous-genai demo (preset inputs)")
+    parser = argparse.ArgumentParser(description="genai-calling demo (preset inputs)")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     p_chat = sub.add_parser("chat", help="Chat with preset prompt + preset image")

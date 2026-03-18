@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 class TestTuziModels(unittest.TestCase):
     def test_tuzi_catalog_has_no_duplicates(self) -> None:
-        from nous.genai.reference.catalog import MODEL_CATALOG
+        from gravtice.genai.reference.catalog import MODEL_CATALOG
 
         for provider in ("tuzi-web", "tuzi-openai", "tuzi-google", "tuzi-anthropic"):
             model_ids = MODEL_CATALOG[provider]
@@ -12,7 +12,7 @@ class TestTuziModels(unittest.TestCase):
                 self.assertEqual(len(model_ids), len(set(model_ids)))
 
     def test_tuzi_web_routes_by_model_id_prefix(self) -> None:
-        from nous.genai.providers import TuziAdapter
+        from gravtice.genai.providers import TuziAdapter
 
         openai = object()
         gemini = object()
@@ -28,8 +28,8 @@ class TestTuziModels(unittest.TestCase):
         self.assertIs(tuzi._route("text-embedding-004"), gemini)
 
     def test_tuzi_web_route_requires_protocol_keys(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.providers import TuziAdapter
+        from gravtice.genai import GenAIError
+        from gravtice.genai.providers import TuziAdapter
 
         tuzi = TuziAdapter(openai=None, gemini=None, anthropic=None)
 
@@ -46,15 +46,15 @@ class TestTuziModels(unittest.TestCase):
         self.assertEqual(cm.exception.info.type, "InvalidRequestError")
 
     def test_tuzi_sora_seconds_sent_as_string(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
             OutputVideoSpec,
             Part,
         )
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai._internal.http import (
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai._internal.http import (
             multipart_form_data_fields as real_multipart_form_data_fields,
         )
 
@@ -70,10 +70,10 @@ class TestTuziModels(unittest.TestCase):
 
         with (
             patch(
-                "nous.genai.providers.openai.multipart_form_data_fields"
+                "gravtice.genai.providers.openai.multipart_form_data_fields"
             ) as multipart_form_data_fields,
             patch(
-                "nous.genai.providers.openai.request_streaming_body_json"
+                "gravtice.genai.providers.openai.request_streaming_body_json"
             ) as request_streaming_body_json,
         ):
             multipart_form_data_fields.side_effect = real_multipart_form_data_fields
@@ -91,7 +91,7 @@ class TestTuziModels(unittest.TestCase):
             self.assertIsInstance(fields.get("seconds"), str)
             self.assertEqual(fields.get("seconds"), "4")
 
-        with patch("nous.genai.providers.openai.request_json") as request_json:
+        with patch("gravtice.genai.providers.openai.request_json") as request_json:
             request_json.return_value = {"id": "vid_123"}
             adapter = OpenAIAdapter(
                 api_key="__demo__",
@@ -106,7 +106,7 @@ class TestTuziModels(unittest.TestCase):
             self.assertIsInstance(body.get("seconds"), int)
 
     def test_openai_adapter_capabilities_infer_tuzi_modalities(self) -> None:
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         adapter = OpenAIAdapter(
             api_key="__demo__",
@@ -127,9 +127,9 @@ class TestTuziModels(unittest.TestCase):
         self.assertEqual(cap.output_modalities, {"text"})
 
     def test_tuzi_web_chirp_v3_5_uses_suno_submit_music(self) -> None:
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import (
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputAudioSpec,
@@ -168,7 +168,7 @@ class TestTuziModels(unittest.TestCase):
                 }
             raise AssertionError(f"unexpected request_json call: {method} {url}")
 
-        with patch("nous.genai.providers.tuzi.request_json") as request_json:
+        with patch("gravtice.genai.providers.tuzi.request_json") as request_json:
             request_json.side_effect = fake_request_json
             resp = tuzi.generate(req, stream=False)
 
@@ -197,9 +197,9 @@ class TestTuziModels(unittest.TestCase):
         self.assertEqual(body.get("mv"), "chirp-v3-5")
 
     def test_tuzi_web_chirp_v4_sets_mv(self) -> None:
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import (
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputAudioSpec,
@@ -238,7 +238,7 @@ class TestTuziModels(unittest.TestCase):
                 }
             raise AssertionError(f"unexpected request_json call: {method} {url}")
 
-        with patch("nous.genai.providers.tuzi.request_json") as request_json:
+        with patch("gravtice.genai.providers.tuzi.request_json") as request_json:
             request_json.side_effect = fake_request_json
             resp = tuzi.generate(req, stream=False)
 
@@ -256,9 +256,9 @@ class TestTuziModels(unittest.TestCase):
         self.assertEqual(body.get("mv"), "chirp-v4")
 
     def test_tuzi_web_chirp_v3_5_waits_via_feed(self) -> None:
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import (
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputAudioSpec,
@@ -303,7 +303,7 @@ class TestTuziModels(unittest.TestCase):
                 }
             raise AssertionError(f"unexpected request_json call: {method} {url}")
 
-        with patch("nous.genai.providers.tuzi.request_json") as request_json:
+        with patch("gravtice.genai.providers.tuzi.request_json") as request_json:
             request_json.side_effect = fake_request_json
             resp = tuzi.generate(req, stream=False)
 
@@ -321,9 +321,9 @@ class TestTuziModels(unittest.TestCase):
         )
 
     def test_tuzi_web_chirp_v3_5_submit_music_prefers_task_id_fetch(self) -> None:
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import (
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputAudioSpec,
@@ -368,7 +368,7 @@ class TestTuziModels(unittest.TestCase):
                 }
             raise AssertionError(f"unexpected request_json call: {method} {url}")
 
-        with patch("nous.genai.providers.tuzi.request_json") as request_json:
+        with patch("gravtice.genai.providers.tuzi.request_json") as request_json:
             request_json.side_effect = fake_request_json
             resp = tuzi.generate(req, stream=False)
 
@@ -386,9 +386,9 @@ class TestTuziModels(unittest.TestCase):
         )
 
     def test_tuzi_web_suno_submit_music_falls_back_to_fetch(self) -> None:
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import (
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputAudioSpec,
@@ -430,7 +430,7 @@ class TestTuziModels(unittest.TestCase):
                 }
             raise AssertionError(f"unexpected request_json call: {method} {url}")
 
-        with patch("nous.genai.providers.tuzi.request_json") as request_json:
+        with patch("gravtice.genai.providers.tuzi.request_json") as request_json:
             request_json.side_effect = fake_request_json
             resp = tuzi.generate(req, stream=False)
 
@@ -448,8 +448,8 @@ class TestTuziModels(unittest.TestCase):
         )
 
     def test_openai_images_supports_tuzi_wrapped_response(self) -> None:
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import (
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputImageSpec,
@@ -469,7 +469,7 @@ class TestTuziModels(unittest.TestCase):
             wait=True,
         )
 
-        with patch("nous.genai.providers.openai.request_json") as request_json:
+        with patch("gravtice.genai.providers.openai.request_json") as request_json:
             request_json.return_value = {
                 "data": {
                     "created": 1736160000,
@@ -486,7 +486,7 @@ class TestTuziModels(unittest.TestCase):
         self.assertEqual(getattr(parts[0].source, "kind", None), "url")
 
     def test_gemini_adapter_capabilities_support_imagen_and_native_audio(self) -> None:
-        from nous.genai.providers.gemini import GeminiAdapter
+        from gravtice.genai.providers.gemini import GeminiAdapter
 
         adapter = GeminiAdapter(
             api_key="__demo__",
@@ -505,14 +505,14 @@ class TestTuziModels(unittest.TestCase):
         )
 
     def test_tuzi_openai_allows_non_sora_video_model_ids(self) -> None:
-        from nous.genai.types import (
+        from gravtice.genai.types import (
             GenerateRequest,
             Message,
             OutputSpec,
             OutputVideoSpec,
             Part,
         )
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         req = GenerateRequest(
             model="tuzi-openai:pika-1.5",
@@ -525,7 +525,7 @@ class TestTuziModels(unittest.TestCase):
         )
 
         with patch(
-            "nous.genai.providers.openai.request_streaming_body_json"
+            "gravtice.genai.providers.openai.request_streaming_body_json"
         ) as request_streaming_body_json:
             request_streaming_body_json.return_value = {"id": "vid_123"}
             adapter = OpenAIAdapter(
@@ -537,7 +537,7 @@ class TestTuziModels(unittest.TestCase):
             self.assertEqual(out.status, "running")
 
     def test_tuzi_deepsearch_capabilities(self) -> None:
-        from nous.genai.providers import TuziAdapter
+        from gravtice.genai.providers import TuziAdapter
 
         openai = object()
         tuzi = TuziAdapter(openai=openai, gemini=None, anthropic=None)
@@ -556,10 +556,10 @@ class TestTuziModels(unittest.TestCase):
                 self.assertTrue(cap.supports_job)
 
     def test_tuzi_deepsearch_rejects_stream(self) -> None:
-        from nous.genai import GenAIError
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import GenerateRequest, Message, OutputSpec, Part
+        from gravtice.genai import GenAIError
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import GenerateRequest, Message, OutputSpec, Part
 
         openai_adapter = OpenAIAdapter(
             api_key="__demo__",
@@ -580,9 +580,9 @@ class TestTuziModels(unittest.TestCase):
         self.assertIn("streaming", str(cm.exception))
 
     def test_tuzi_deepsearch_submit_async_task(self) -> None:
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
-        from nous.genai.types import GenerateRequest, Message, OutputSpec, Part
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.types import GenerateRequest, Message, OutputSpec, Part
 
         openai_adapter = OpenAIAdapter(
             api_key="test_key",
@@ -600,7 +600,7 @@ class TestTuziModels(unittest.TestCase):
             wait=False,
         )
 
-        with patch("nous.genai.providers.tuzi.request_json") as mock_request:
+        with patch("gravtice.genai.providers.tuzi.request_json") as mock_request:
             mock_request.return_value = {
                 "id": "task_abc123",
                 "preview_url": "https://asyncdata.net/web/task_abc123",
@@ -622,8 +622,8 @@ class TestTuziModels(unittest.TestCase):
             )
 
     def test_tuzi_suno_wait_fetch_audio_supports_list_data(self) -> None:
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         openai_adapter = OpenAIAdapter(
             api_key="test_key",
@@ -632,7 +632,9 @@ class TestTuziModels(unittest.TestCase):
         )
         tuzi = TuziAdapter(openai=openai_adapter, gemini=None, anthropic=None)
 
-        with patch("nous.genai.providers.tuzi.TuziAdapter._suno_fetch") as suno_fetch:
+        with patch(
+            "gravtice.genai.providers.tuzi.TuziAdapter._suno_fetch"
+        ) as suno_fetch:
             suno_fetch.return_value = {
                 "status": "SUCCESS",
                 "data": [
@@ -655,8 +657,8 @@ class TestTuziModels(unittest.TestCase):
         )
 
     def test_tuzi_suno_wait_fetch_audio_timeout_exposes_last_status(self) -> None:
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         openai_adapter = OpenAIAdapter(
             api_key="test_key",
@@ -679,9 +681,11 @@ class TestTuziModels(unittest.TestCase):
         fake = FakeTime()
 
         with (
-            patch("nous.genai.providers.tuzi.time.time", side_effect=fake.time),
-            patch("nous.genai.providers.tuzi.time.sleep", side_effect=fake.sleep),
-            patch("nous.genai.providers.tuzi.TuziAdapter._suno_fetch") as suno_fetch,
+            patch("gravtice.genai.providers.tuzi.time.time", side_effect=fake.time),
+            patch("gravtice.genai.providers.tuzi.time.sleep", side_effect=fake.sleep),
+            patch(
+                "gravtice.genai.providers.tuzi.TuziAdapter._suno_fetch"
+            ) as suno_fetch,
         ):
             suno_fetch.return_value = {"status": "PENDING", "data": {}}
             resp = tuzi._suno_wait_fetch_audio(
@@ -695,8 +699,8 @@ class TestTuziModels(unittest.TestCase):
         self.assertIsNone(resp.job.last_detail)
 
     def test_tuzi_suno_wait_fetch_audio_accepts_complete_status(self) -> None:
-        from nous.genai.providers import TuziAdapter
-        from nous.genai.providers.openai import OpenAIAdapter
+        from gravtice.genai.providers import TuziAdapter
+        from gravtice.genai.providers.openai import OpenAIAdapter
 
         openai_adapter = OpenAIAdapter(
             api_key="test_key",
@@ -705,7 +709,9 @@ class TestTuziModels(unittest.TestCase):
         )
         tuzi = TuziAdapter(openai=openai_adapter, gemini=None, anthropic=None)
 
-        with patch("nous.genai.providers.tuzi.TuziAdapter._suno_fetch") as suno_fetch:
+        with patch(
+            "gravtice.genai.providers.tuzi.TuziAdapter._suno_fetch"
+        ) as suno_fetch:
             suno_fetch.return_value = {
                 "status": "complete",
                 "data": {"audio_url": "https://cdn1.suno.ai/abc.mp3"},

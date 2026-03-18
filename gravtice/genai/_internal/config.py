@@ -7,11 +7,34 @@ from pathlib import Path
 
 _ENV_PRIORITY = (".env.local", ".env.production", ".env.development", ".env.test")
 
-_ENV_PREFIX = "NOUS_GENAI_"
+_ENV_PREFIX = "GENAI_CALLING_"
 
 
 def get_prefixed_env(name: str) -> str | None:
-    return os.environ.get(f"{_ENV_PREFIX}{name}")
+    for env_name in prefixed_env_names(name):
+        value = os.environ.get(env_name)
+        if value is not None:
+            return value
+    return None
+
+
+def get_prefixed_env_int(name: str, default: int) -> int:
+    raw = get_prefixed_env(name)
+    if raw is None:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
+
+
+def prefixed_env_names(name: str) -> tuple[str, ...]:
+    return (f"{_ENV_PREFIX}{name}",)
+
+
+def format_prefixed_env_names(name: str, *extra_names: str) -> str:
+    names = [*prefixed_env_names(name), *extra_names]
+    return "/".join(names)
 
 
 def _parse_env_line(line: str) -> tuple[str, str] | None:
@@ -32,21 +55,22 @@ def _parse_env_line(line: str) -> tuple[str, str] | None:
     return key, value
 
 
-def _global_env_path() -> Path:
-    return Path.home() / ".nous" / ".env"
+def _global_env_paths() -> list[Path]:
+    return [Path.home() / ".genai-calling" / ".env"]
 
 
 def load_env_files(root: str | Path | None = None) -> list[Path]:
     """
     Load env files by priority:
-    `.env.local > .env.production > .env.development > .env.test > ~/.nous/.env`.
+    `.env.local > .env.production > .env.development > .env.test >
+    ~/.genai-calling/.env`.
 
     Implementation: apply higher priority first without overriding existing env.
     """
     base = Path(root) if root is not None else Path.cwd()
     loaded: list[Path] = []
     paths = [base / name for name in _ENV_PRIORITY]
-    paths.append(_global_env_path())
+    paths.extend(_global_env_paths())
     for path in paths:
         if not path.is_file():
             continue

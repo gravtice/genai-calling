@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 class TestClientProtectedUrlArtifacts(unittest.TestCase):
     def test_externalize_protected_url_to_artifact(self) -> None:
-        from nous.genai.client import Client
-        from nous.genai.types import GenerateResponse, Message, Part, PartSourceUrl
+        from gravtice.genai.client import Client
+        from gravtice.genai.types import GenerateResponse, Message, Part, PartSourceUrl
 
         class DummyStore:
             def __init__(self) -> None:
@@ -55,7 +55,7 @@ class TestClientProtectedUrlArtifacts(unittest.TestCase):
         )
 
         with patch(
-            "nous.genai.client.download_to_tempfile",
+            "gravtice.genai.client.download_to_tempfile",
             side_effect=fake_download_to_tempfile,
         ):
             out = client._externalize_protected_url_parts(
@@ -68,7 +68,7 @@ class TestClientProtectedUrlArtifacts(unittest.TestCase):
         self.assertEqual(part.source.url, "http://artifact/a1")
 
     def test_download_to_file_adds_headers_only_for_same_host(self) -> None:
-        from nous.genai.client import Client
+        from gravtice.genai.client import Client
 
         class DummyAdapter:
             base_url = "https://generativelanguage.googleapis.com"
@@ -85,7 +85,7 @@ class TestClientProtectedUrlArtifacts(unittest.TestCase):
         with (
             patch.object(client, "_adapter", return_value=DummyAdapter()),
             patch(
-                "nous.genai.client._download_to_file",
+                "gravtice.genai.client._download_to_file",
                 side_effect=fake_download_to_file,
             ),
         ):
@@ -100,7 +100,7 @@ class TestClientProtectedUrlArtifacts(unittest.TestCase):
         with (
             patch.object(client, "_adapter", return_value=DummyAdapter()),
             patch(
-                "nous.genai.client._download_to_file",
+                "gravtice.genai.client._download_to_file",
                 side_effect=fake_download_to_file,
             ),
         ):

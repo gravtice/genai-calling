@@ -1,6 +1,6 @@
-# nous-genai
+# genai-calling
 
-![CI](https://github.com/gravtice/nous-genai/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/gravtice/genai-calling/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-≥3.10-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -23,27 +23,35 @@ English README: `README.md`
 
 ```bash
 # 从 PyPI 安装
-pip install nous-genai
+pip install gravtice-genai-calling
 
 # 从源码安装（开发）
 pip install -e .
 
 # 或使用 uv（开发，推荐）
-uv sync
+uv sync --group dev
 ```
+
+Python 导入包名为 `gravtice`。
 
 ## Skill（外部仓库安装）
 
-`nous-genai` skill 已从本仓库移出，不再放在 `skills/` 目录。
+独立 skill 已从本仓库移出，不再放在 `skills/` 目录。
 
-安装命令：
+推荐安装名：
+
+```bash
+npx skills add gravtice/nous-skills -s genai-calling
+```
+
+旧的 skill catalog 里仍可能保留旧名字：
 
 ```bash
 npx skills add gravtice/nous-skills -s nous-genai
 ```
 
-如果需要查看 skill 源代码：
-https://github.com/gravtice/nous-skills/tree/main/skills/nous-genai
+skill 仓库：
+https://github.com/gravtice/nous-skills
 
 ## 配置（环境变量，零参数）
 
@@ -52,27 +60,27 @@ https://github.com/gravtice/nous-skills/tree/main/skills/nous-genai
 环境变量有两种设置方式：
 
 1. 运行时直接指定（命令前内联或在 shell 中 `export`）
-2. 写入环境配置文件（`.env.local`、`.env.production`、`.env.development`、`.env.test`）以及全局兜底文件 `~/.nous/.env`
+2. 写入环境配置文件（`.env.local`、`.env.production`、`.env.development`、`.env.test`）以及全局兜底文件 `~/.genai-calling/.env`
 
 运行时内联示例：
 
 ```bash
-NOUS_GENAI_OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "你好"
+GENAI_CALLING_OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "你好"
 ```
 
 使用配置文件时，SDK/CLI/MCP 启动会自动加载，优先级（高 -> 低）：
 
-`.env.local > .env.production > .env.development > .env.test > ~/.nous/.env`
+`.env.local > .env.production > .env.development > .env.test > ~/.genai-calling/.env`
 
 覆盖规则：进程环境变量优先于项目和全局 env 文件（因为加载使用 `os.environ.setdefault()`）。
 
-`~/.nous/.env` 适合放用户级共享默认值（例如 API Key）；端口这类 worktree 专属配置仍然建议放在项目内的 `.env.local`。
+`~/.genai-calling/.env` 适合放用户级共享默认值（例如 API Key）；端口这类 worktree 专属配置仍然建议放在项目内的 `.env.local`。
 
 最小 `.env.local` 示例（只用 OpenAI）：
 
 ```bash
-NOUS_GENAI_OPENAI_API_KEY=...
-NOUS_GENAI_TIMEOUT_MS=120000
+GENAI_CALLING_OPENAI_API_KEY=...
+GENAI_CALLING_TIMEOUT_MS=120000
 ```
 
 完整配置项见 `docs/CONFIGURATION.md`，也可以直接复制 `.env.example` 为 `.env.local` 后按需填写。
@@ -98,7 +106,7 @@ uv run genai --model openai:gpt-image-1 --prompt "白底、极简风格的红色
 uv run genai --model openai:whisper-1 --audio-path ./examples/demo_tts.mp3
 
 # 语音合成（text -> audio file）
-uv run genai --model openai:tts-1 --prompt "你好，这里是 nous genai" --output-path ./out.mp3
+uv run genai --model openai:tts-1 --prompt "你好，这里是 genai-calling" --output-path ./out.mp3
 
 # 视频生成（text -> video，异步方式）
 uv run genai --model openai:sora-2 --prompt "雨后水洼上一只纸船缓缓前进，电影感" --no-wait
@@ -109,7 +117,7 @@ uv run genai --model openai:sora-2 --job-id "<job_id>" --output-path ./out.mp4 -
 ### SDK：文本生成
 
 ```python
-from nous.genai import Client, GenerateRequest, Message, OutputSpec, Part
+from gravtice import Client, GenerateRequest, Message, OutputSpec, Part
 
 client = Client()
 resp = client.generate(
@@ -126,7 +134,7 @@ print(resp.output[0].content[0].text)
 
 ```python
 import sys
-from nous.genai import Client, GenerateRequest, Message, OutputSpec, Part
+from gravtice import Client, GenerateRequest, Message, OutputSpec, Part
 
 client = Client()
 req = GenerateRequest(
@@ -144,8 +152,8 @@ print()
 ### SDK：图片理解
 
 ```python
-from nous.genai import Client, GenerateRequest, Message, OutputSpec, Part, PartSourcePath
-from nous.genai.types import detect_mime_type
+from gravtice import Client, GenerateRequest, Message, OutputSpec, Part, PartSourcePath
+from gravtice import detect_mime_type
 
 path = "./cat.png"
 mime = detect_mime_type(path) or "application/octet-stream"
@@ -172,7 +180,7 @@ print(resp.output[0].content[0].text)
 ### SDK：列出可用模型
 
 ```python
-from nous.genai import Client
+from gravtice import Client
 
 client = Client()
 print(client.list_all_available_models())
@@ -217,16 +225,16 @@ uv run genai-mcp-cli tools                 # CLI 测试
 
 ## 安全特性
 
-- **SSRF 防护**：默认拒绝私网/loopback URL（`NOUS_GENAI_ALLOW_PRIVATE_URLS=1` 可放开）
+- **SSRF 防护**：默认拒绝私网/loopback URL（`GENAI_CALLING_ALLOW_PRIVATE_URLS=1` 可放开）
 - **DNS Pinning**：防止 DNS rebinding 攻击
-- **下载限制**：单次下载上限 128MiB（`NOUS_GENAI_URL_DOWNLOAD_MAX_BYTES`）
+- **下载限制**：单次下载上限 128MiB（`GENAI_CALLING_URL_DOWNLOAD_MAX_BYTES`）
 - **Bearer Token 认证**：MCP Server 支持 Token 认证
 - **Token Rules**：细粒度访问控制
 
 ## 测试
 
 ```bash
-uv run pytest tests/ -v
+uv run python -m pytest tests/ -v
 ```
 
 ## 文档

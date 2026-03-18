@@ -12,7 +12,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from gravtice import (  # noqa: E402
+from gravtice.genai import (  # noqa: E402
     Client,
     GenAIError,
     GenerateParams,

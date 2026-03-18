@@ -32,7 +32,7 @@ pip install -e .
 uv sync --group dev
 ```
 
-Python 导入包名为 `gravtice`。
+Python 导入请使用 `gravtice.genai`。
 
 ## 配置（环境变量，零参数）
 
@@ -98,7 +98,7 @@ uv run genai --model openai:sora-2 --job-id "<job_id>" --output-path ./out.mp4 -
 ### SDK：文本生成
 
 ```python
-from gravtice import Client, GenerateRequest, Message, OutputSpec, Part
+from gravtice.genai import Client, GenerateRequest, Message, OutputSpec, Part
 
 client = Client()
 resp = client.generate(
@@ -115,7 +115,7 @@ print(resp.output[0].content[0].text)
 
 ```python
 import sys
-from gravtice import Client, GenerateRequest, Message, OutputSpec, Part
+from gravtice.genai import Client, GenerateRequest, Message, OutputSpec, Part
 
 client = Client()
 req = GenerateRequest(
@@ -133,8 +133,15 @@ print()
 ### SDK：图片理解
 
 ```python
-from gravtice import Client, GenerateRequest, Message, OutputSpec, Part, PartSourcePath
-from gravtice import detect_mime_type
+from gravtice.genai import (
+    Client,
+    GenerateRequest,
+    Message,
+    OutputSpec,
+    Part,
+    PartSourcePath,
+    detect_mime_type,
+)
 
 path = "./cat.png"
 mime = detect_mime_type(path) or "application/octet-stream"
@@ -161,7 +168,7 @@ print(resp.output[0].content[0].text)
 ### SDK：列出可用模型
 
 ```python
-from gravtice import Client
+from gravtice.genai import Client
 
 client = Client()
 print(client.list_all_available_models())

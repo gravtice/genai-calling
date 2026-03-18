@@ -7,7 +7,7 @@
 自动加载：以下入口都会调用 `gravtice.genai._internal.config.load_env_files()`：
 
 - `Client()`（`gravtice/genai/client.py`）
-- `python -m gravtice` / `genai`（`gravtice/__main__.py` / `gravtice/genai/cli.py`）
+- `python -m gravtice.genai` / `genai`（`gravtice/genai/__main__.py` / `gravtice/genai/cli.py`）
 - `genai-mcp-server` / `genai-mcp-cli`（`gravtice/genai/mcp_server.py` / `gravtice/genai/mcp_cli.py`）
 
 环境文件优先级（高 → 低）：

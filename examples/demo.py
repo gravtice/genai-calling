@@ -22,7 +22,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable
 
-from gravtice import (
+from gravtice.genai import (
     Client,
     GenAIError,
     GenerateRequest,
@@ -37,9 +37,9 @@ from gravtice import (
     PartSourcePath,
     PartSourceRef,
     PartSourceUrl,
+    detect_mime_type,
 )
 from gravtice.genai.tools import parse_output
-from gravtice import detect_mime_type
 
 
 _DEMO_DIR = Path(__file__).resolve().parent

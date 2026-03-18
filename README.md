@@ -25,7 +25,7 @@ One interface for calling multimodal models; four ways to use: Skill, MCP, CLI, 
 pip install genai-calling
 ```
 
-Python import package is `gravtice`.
+Python imports should use `gravtice.genai`.
 
 For development:
 
@@ -99,7 +99,7 @@ uv run genai --model openai:sora-2 --job-id "<job_id>" --output-path ./out.mp4 -
 ### SDK: Text generation
 
 ```python
-from gravtice import Client, GenerateRequest, Message, OutputSpec, Part
+from gravtice.genai import Client, GenerateRequest, Message, OutputSpec, Part
 
 client = Client()
 resp = client.generate(
@@ -116,7 +116,7 @@ print(resp.output[0].content[0].text)
 
 ```python
 import sys
-from gravtice import Client, GenerateRequest, Message, OutputSpec, Part
+from gravtice.genai import Client, GenerateRequest, Message, OutputSpec, Part
 
 client = Client()
 req = GenerateRequest(
@@ -134,8 +134,15 @@ print()
 ### SDK: Image understanding
 
 ```python
-from gravtice import Client, GenerateRequest, Message, OutputSpec, Part, PartSourcePath
-from gravtice import detect_mime_type
+from gravtice.genai import (
+    Client,
+    GenerateRequest,
+    Message,
+    OutputSpec,
+    Part,
+    PartSourcePath,
+    detect_mime_type,
+)
 
 path = "./cat.png"
 mime = detect_mime_type(path) or "application/octet-stream"
@@ -162,7 +169,7 @@ print(resp.output[0].content[0].text)
 ### SDK: List available models
 
 ```python
-from gravtice import Client
+from gravtice.genai import Client
 
 client = Client()
 print(client.list_all_available_models())

@@ -46,7 +46,7 @@ Python 导入包名为 `gravtice`。
 运行时内联示例：
 
 ```bash
-GENAI_CALLING_OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "你好"
+OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "你好"
 ```
 
 使用配置文件时，SDK/CLI/MCP 启动会自动加载，优先级（高 -> 低）：
@@ -60,7 +60,7 @@ GENAI_CALLING_OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --promp
 最小 `.env.local` 示例（只用 OpenAI）：
 
 ```bash
-GENAI_CALLING_OPENAI_API_KEY=...
+OPENAI_API_KEY=...
 GENAI_CALLING_TIMEOUT_MS=120000
 ```
 

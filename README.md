@@ -47,7 +47,7 @@ You can set env vars in two ways:
 Runtime example (inline):
 
 ```bash
-GENAI_CALLING_OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "Hello"
+OPENAI_API_KEY=... uv run genai --model openai:gpt-4o-mini --prompt "Hello"
 ```
 
 When env files are used, SDK/CLI/MCP loads them automatically with priority (high -> low):
@@ -61,7 +61,7 @@ Use `~/.genai-calling/.env` for user-wide shared defaults such as API keys. Keep
 Minimal `.env.local` (OpenAI only):
 
 ```bash
-GENAI_CALLING_OPENAI_API_KEY=...
+OPENAI_API_KEY=...
 GENAI_CALLING_TIMEOUT_MS=120000
 ```
 

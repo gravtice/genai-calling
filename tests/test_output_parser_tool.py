@@ -64,7 +64,7 @@ class TestOutputParserTool(unittest.TestCase):
                     role="assistant",
                     content=[
                         Part.tool_call(
-                            name="nous_output_parser",
+                            name="genai_output_parser",
                             arguments={"output": {"a": 1}},
                         )
                     ],
@@ -123,7 +123,7 @@ class TestOutputParserTool(unittest.TestCase):
                             role="assistant",
                             content=[
                                 Part.tool_call(
-                                    name="nous_output_parser",
+                                    name="genai_output_parser",
                                     arguments={"output": {"a": 1}},
                                 )
                             ],
@@ -142,7 +142,7 @@ class TestOutputParserTool(unittest.TestCase):
         self.assertIsNotNone(c.last_request)
         assert c.last_request is not None
         self.assertEqual(c.last_request.tool_choice.mode, "tool")
-        self.assertEqual(c.last_request.tool_choice.name, "nous_output_parser")
+        self.assertEqual(c.last_request.tool_choice.name, "genai_output_parser")
         self.assertTrue(
             c.last_request.input[0].content[0].require_text().endswith("hello")
         )

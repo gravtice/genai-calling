@@ -35,25 +35,6 @@ pip install -e .
 uv sync --group dev
 ```
 
-## Skill (External Repository)
-
-The standalone skill is no longer bundled in this repository.
-
-Preferred install name:
-
-```bash
-npx skills add gravtice/nous-skills -s genai-calling
-```
-
-Legacy catalogs may still expose the old entry name:
-
-```bash
-npx skills add gravtice/nous-skills -s nous-genai
-```
-
-Skill repository:
-https://github.com/gravtice/nous-skills
-
 ## Configuration (Env Vars, Zero-parameter)
 
 Configuration is managed via environment variables.

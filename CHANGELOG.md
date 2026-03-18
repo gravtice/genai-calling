@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Publish package metadata under `gravtice-genai-calling`
-- Rename Python import package from `nous` to `gravtice`
+- Switch Python import package to `gravtice`
 - Use only `GENAI_CALLING_*` env vars and `~/.genai-calling/.env`
 
 ## [0.1.4] - 2026-03-11

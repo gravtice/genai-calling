@@ -34,25 +34,6 @@ uv sync --group dev
 
 Python 导入包名为 `gravtice`。
 
-## Skill（外部仓库安装）
-
-独立 skill 已从本仓库移出，不再放在 `skills/` 目录。
-
-推荐安装名：
-
-```bash
-npx skills add gravtice/nous-skills -s genai-calling
-```
-
-旧的 skill catalog 里仍可能保留旧名字：
-
-```bash
-npx skills add gravtice/nous-skills -s nous-genai
-```
-
-skill 仓库：
-https://github.com/gravtice/nous-skills
-
 ## 配置（环境变量，零参数）
 
 配置统一通过环境变量完成。

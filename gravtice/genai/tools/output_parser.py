@@ -15,7 +15,7 @@ from ..types import (
     ToolChoice,
 )
 
-DEFAULT_OUTPUT_PARSER_TOOL_NAME = "nous_output_parser"
+DEFAULT_OUTPUT_PARSER_TOOL_NAME = "genai_output_parser"
 
 _DEFAULT_WRAPPER_KEY = "output"
 
